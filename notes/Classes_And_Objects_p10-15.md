@@ -1,6 +1,6 @@
-# Classes and Objects：p.10–15 學習筆記
+# Classes and Objects：p.10–18 學習筆記
 
-教材：`5_Classes_And_Objects.pdf`，第 10–15 頁。
+教材：`5_Classes_And_Objects.pdf`，第 10–18 頁。
 
 本文以英文保留 Java 技術名詞，搭配中文解釋。先前說明中的「引用」就是 **reference**。
 
@@ -313,6 +313,105 @@ bCircle = new Circle();
 ```
 
 `bCircle` 會指向新的 object C，`aCircle` 仍指向 A。重新指派 reference variable，與修改 object 的 state，是不同的操作。
+
+## p.16 — Accessing Class Members：Dot Operator 與 Field Access
+
+投影片使用 **dot separator** 這個名稱，課堂也常稱為 **dot operator**，指的就是句點 `.`。在這些例子中，它用來透過 object reference 存取 members，包括 fields 和 methods。
+
+```java
+Circle aCircle = new Circle();
+aCircle.x = 2.0;
+aCircle.y = 2.0;
+aCircle.r = 1.0;
+```
+
+- `aCircle`：reference variable，指向一個 Circle object。
+- `x`、`y`：表示圓心座標的 fields。
+- `r`：表示 radius 的 field。
+- `aCircle.r`：**field access**，存取該 object 的 `r` field。
+- `aCircle.r = 1.0;`：**assignment to a field**，把 `1.0` 存入該 field，改變 object 的 state。
+
+投影片的語法可以更精確地整理為：
+
+```java
+reference.fieldName
+reference.methodName(arguments)
+```
+
+這些存取必須符合 member 的 access control；例如，其他 class 不能任意直接存取 `private` field。此例假設 Circle 的 members 可由呼叫端存取。
+
+## p.17 — Accessing Class Members：Method Invocation 與 Message Passing
+
+```java
+Circle aCircle = new Circle();
+double area;
+aCircle.r = 1.0;
+area = aCircle.area();
+```
+
+**Method invocation** 就是 **method call**，表示呼叫 method。最後一行會先呼叫 object 的 `area()` method，再把 return value 指派給 local variable `area`。
+
+| 組成 | 在 `area = aCircle.area();` 中的角色 |
+|---|---|
+| Receiver | `aCircle` 指向的 Circle object |
+| Method | `area()`，計算面積 |
+| Arguments | 沒有；`()` 是空的 argument list |
+| Return value | Method 算出的面積 |
+| Assignment target | 左側的 local variable `area` |
+
+左邊的 `area` 是 variable name，右邊的 `area()` 是 method invocation，兩者角色不同。
+
+這頁直接以「sent 'message' to aCircle」標註 method call，因此 **p.17 是 message passing 的直接程式範例**；p.11 則先介紹 objects 透過 methods 互動的概念。此處 message passing 表示請 receiver 執行操作，不代表一定涉及網路或非同步訊息。
+
+## p.18 — Using Circle Class：把步驟串起來
+
+以下保留投影片的主要流程，將換行整理成可讀的 Java 程式碼。此程式需要另外提供教材的 Circle class，包含可存取的 `x`、`y`、`r` fields，以及 `area()`、`circumference()` methods。
+
+```java
+class MyMain {
+    public static void main(String[] args) {
+        Circle aCircle;           // 1. 宣告 reference variable
+        aCircle = new Circle();   // 2. 建立 object，儲存 reference
+
+        aCircle.x = 10;           // 3. Field assignment：設定圓心及半徑
+        aCircle.y = 20;
+        aCircle.r = 5;
+
+        double area = aCircle.area();              // 4. Method invocation
+        double circumf = aCircle.circumference();  //    儲存 return values
+
+        System.out.println("Radius=" + aCircle.r + " Area=" + area);
+        System.out.println("Radius=" + aCircle.r
+                + " Circumference=" + circumf);
+    }
+}
+```
+
+執行順序是：**宣告 reference variable → 建立 object → 設定 fields → 呼叫 methods → 印出結果**。
+
+`aCircle.x`、`aCircle.y`、`aCircle.r` 都是 field access；加上 `= 值` 就是在做 assignment。`aCircle.area()` 與 `aCircle.circumference()` 才是 method invocation。
+
+投影片顯示的輸出為：
+
+```text
+Radius=5.0 Area=78.5
+Radius=5.0 Circumference =31.400000000000002
+```
+
+這些數值對應以 `3.14` 近似 π 的計算：area 為 `3.14 × 5 × 5`，circumference 為 `2 × 3.14 × 5`。尾端的 `000000000000002` 是 floating-point representation 的精度現象；實際輸出取決於 Circle methods 的實作。
+
+### 聽課名詞補充：Invocation 與 Dot Operator
+
+先前聽到的「invocation」對應 **method invocation**；「datodator」依發音及這幾頁的內容推測，很可能是 **dot operator**。投影片 p.16 寫的是 **dot separator**。這是依教材與發音做的判斷，並非老師原話的逐字確認。
+
+| 寫法 | 技術名詞 | 意思 |
+|---|---|---|
+| `aCircle.r` | Field access | 存取 radius 資料 |
+| `aCircle.r = 5;` | Assignment to a field | 把 radius 設為 `5` |
+| `aCircle.area()` | Method invocation / method call | 呼叫計算面積的 method |
+| 上述寫法中的 `.` | Dot operator / dot separator | 用來存取 member |
+
+**在這些例子中，field name 後沒有 `()`；method invocation 有 `()`。Field access 與 method invocation 都會使用 `.`。**
 
 ## 重點比較
 
