@@ -1,6 +1,6 @@
 # CSYE6200 OOP — Week 3：Arrays、Strings 與 I/O
 
-**繁體中文版** · [English](notes.en.md) · [導覽](README.md)
+**繁體中文版** · [English](notes.en.md) · [導覽](../README.md)
 
 依 `Arrays_String_InputOutput.pdf` 的實際 PDF 頁序（1–28）整理。保留原投影片標題，加入學習重點、程式範例與課堂討論；補充與更正會另外標明。本筆記是學習整理，並非老師逐字講稿。
 

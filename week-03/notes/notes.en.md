@@ -1,6 +1,6 @@
 # CSYE6200 OOP — Week 3: Arrays, Strings, and I/O
 
-**English edition** · [繁體中文](notes.zh-TW.md) · [Guide](README.md)
+**English edition** · [繁體中文](notes.zh-TW.md) · [Guide](../README.md)
 
 These notes follow the physical PDF page order (1–28) of `Arrays_String_InputOutput.pdf`. Original slide titles are retained. Examples, classroom discussion, and corrections are added as study material; this is not a verbatim lecture transcript.
 
