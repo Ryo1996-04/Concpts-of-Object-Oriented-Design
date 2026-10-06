@@ -1,6 +1,10 @@
-# Classes and Objects：p.10–18 學習筆記
+# Classes and Objects：p.10–28 學習筆記
 
-教材：`5_Classes_And_Objects.pdf`，第 10–18 頁。
+教材：`5_Classes_And_Objects.pdf`，第 10–28 頁。
+
+閱讀順序：p.10–18 為 object 與 reference 基礎；p.19–28 為 constructors 與 this。課堂 Rectangle 與 Person 補充範例另保留在本文。
+
+程式區塊若只有 statements，應放入 method（例如 `main`）內執行；不同頁的同名 classes 是獨立範例，不能全部貼進同一個檔案。標示「補充／修正」的內容用來釐清投影片的簡化說法或舊式 API。
 
 本文以英文保留 Java 技術名詞，搭配中文解釋。先前說明中的「引用」就是 **reference**。
 
@@ -412,6 +416,193 @@ Radius=5.0 Circumference =31.400000000000002
 | 上述寫法中的 `.` | Dot operator / dot separator | 用來存取 member |
 
 **在這些例子中，field name 後沒有 `()`；method invocation 有 `()`。Field access 與 method invocation 都會使用 `.`。**
+
+## p.19 — Constructing Objects
+
+```java
+Person person = new Person();
+```
+
+從右邊開始理解：`new Person()` 建立 Person instance，執行相應 constructor，產生 reference；`=` 把 reference 存入名為 `person` 的 variable。左側 `Person` 是 variable 的 declared type。
+
+Class 定義新的 reference type，因此除了 `int` 等 primitive types，也可以宣告 `Person`、`Circle` 型別的 variables。`Person person;` 只宣告 variable；真正的 object creation 在 `new Person()`。
+
+補充：此處示範 variable 與 object 使用相同 type；未來學到 inheritance 時，也可以把 subclass object 的 reference 存入相容的 superclass 或 interface variable。
+
+## p.20 — Person Example：Fields 與 Getters / Setters
+
+教材 Person 的 fields 是 `name`、`age`；先前課堂範例用的是 `fName`，概念相同。
+
+```java
+class Person {
+    String name;
+    int age;
+
+    String getName() { return name; }
+    void setName(String n) { name = n; }
+    int getAge() { return age; }
+    void setAge(int a) { age = a; }
+}
+```
+
+| 宣告 | Return type | 功能 |
+|---|---|---|
+| `getName()` | `String` | 讀取姓名 |
+| `setName(String n)` | `void` | 接收 parameter `n`，更新姓名 |
+| `getAge()` | `int` | 讀取年齡 |
+| `setAge(int a)` | `void` | 接收 parameter `a`，更新年齡 |
+
+`void` 表示不回傳 value，不代表沒有執行效果。Setter 會改變 object 的 state。此頁未宣告 constructor，因此使用 compiler 提供的 default constructor。
+
+補充：沒有 access modifier 的 members 是 package-private，不是 `public`。教材為簡化範例直接宣告 fields；若要透過 methods 控制存取，可將 fields 設為 `private`，這與 **encapsulation** 有關。單純加入 getter/setter，而 fields 仍為 public，並沒有阻止直接存取 fields。
+
+## p.21 — Constructing Person Objects：先建立，再設定
+
+```java
+Person p1 = new Person(); // 此時 name = null，age = 0
+p1.setName("John");       // name 改為 "John"
+p1.setAge(22);            // age 改為 22
+```
+
+這三行分成 object creation 和兩次 method invocations。如果忘記呼叫其中一個 setter，對應 field 就保留原本值。
+
+投影片接著問：能不能建立時就有姓名 Smith、年齡 32？可以，透過接下來的 **parameterized constructor**，讓初始化資料由 constructor 接收。
+
+## p.22 — Constructors：辨認規則
+
+Constructor 用來初始化新 object 的 state，其名稱必須與 class name 完全一致，而且沒有 return type。
+
+```java
+Person() { }       // Constructor
+void Person() { }  // 普通 method：名稱雖相同，但有 return type void
+```
+
+上面是語法比較片段，兩者意義不同。教材稱 constructor 為 special method；更精確地說，它是特殊的 constructor declaration，並不是一般可以用 `p.Person()` 重新呼叫的 instance method。
+
+常見 object creation 是 `new Person(...)`。Constructor 也可以透過 `this(...)` 或 `super(...)` 進行 constructor chaining；因此不是所有 constructor invocation 都直接寫 `new`。
+
+## p.23 — Person Constructor：Arguments 如何進入 Fields
+
+```java
+class Person {
+    String name;
+    int age;
+
+    Person(String name, int age) {
+        this.name = name;
+        this.age = age;
+    }
+}
+```
+
+```java
+Person p2 = new Person("Smith", 32);
+```
+
+執行時，argument `"Smith"` 對應 parameter `name`，argument `32` 對應 parameter `age`；接著 assignments 把這兩個值存入新 object 的 fields。Constructor 完成後，`p2` 指向的 object 就具有這些初始值。
+
+此版本只宣告兩個 parameters 的 constructor，因此 `new Person()` 會出現 compile-time error；需要自行加上 no-argument constructor 才能支援它。
+
+## p.24 — Default Constructor：自動提供的條件
+
+一般 class **完全沒有宣告 constructor** 時，compiler 才會提供 default constructor。自行宣告任何 constructor 後，就不再自動補上。
+
+| Class 中的 constructors | `new Person()` | `new Person("Smith", 32)` |
+|---|---|---|
+| 完全沒宣告 | 可以，使用 default constructor | 不可以 |
+| 只有 `Person(String, int)` | 不可以 | 可以 |
+| 同時有 `Person()` 與 `Person(String, int)` | 可以 | 可以 |
+
+補充／修正：fields 的 default initialization 是 object creation 的一部分，不是 default constructor 特有的功能。即使自行寫 constructor，fields 也會先取得 default values，再依 initialization 與 constructor 的程式更新。
+
+| Field type | Default value |
+|---|---|
+| `byte`、`short`、`int`、`long` | 數值 `0` |
+| `float`、`double` | `0.0f`、`0.0d` |
+| `boolean` | `false` |
+| `char` | `'\u0000'`，不是字元 `'0'` |
+| Reference types | `null` |
+
+Default constructor 也涉及 superclass constructor invocation，並不代表完全沒有初始化行為；如果 superclass 沒有可存取的 no-argument constructor，隱含呼叫也可能無法編譯。Local variables 不適用上表的 field default values 規則。
+
+## p.25 — Multiple Constructors：Constructor Overloading
+
+```java
+public class Circle {
+    public double x, y, r;
+
+    public Circle() {
+        x = 0.0;
+        y = 0.0;
+        r = 0.0;
+    }
+
+    public Circle(double cx, double cy, double cr) {
+        x = cx;
+        y = cy;
+        r = cr;
+    }
+}
+```
+
+`new Circle()` 建立中心 `(0, 0)`、radius `0` 的 object；`new Circle(2, 3, 5)` 建立中心 `(2, 3)`、radius `5` 的 object。後者的 integer arguments 可以 widening conversion 成 `double`。
+
+Overloading 依 parameter types、數量及排列區分。只改 parameter name 沒用，例如 `Circle(double radius)` 和 `Circle(double size)` 是相同 parameter type list，不能當兩個 overloads。
+
+## p.26 — Using the this Reference：目前的 Receiver
+
+在 instance method 或 constructor 裡，`this` 指向目前正在處理的 object。在沒有同名 local variable 或 parameter 遮蔽時，`age` 常可視為隱含的 `this.age`。
+
+```java
+void setAge(int age) {
+    this.age = age;
+}
+```
+
+Parameter `age` **shadows** 同名 field；左邊使用 `this.age` 指定 field，右邊 `age` 指 parameter。如果寫成 `age = age;`，只是在 parameter 上做 self-assignment，field 沒有更新。
+
+Static method 沒有隱含的 receiver，所以不能直接使用 `this`。
+
+## p.27 — this Keyword：每個 Object 各自設定
+
+```java
+Person p1 = new Person("Alice", 20);
+Person p2 = new Person("Bob", 25);
+```
+
+執行第一個 constructor 時，`this` 指向 Alice 的新 object；執行第二個時，`this` 指向 Bob 的新 object。兩次 `this.age = age` 分別更新不同 objects 的 instance fields。
+
+`this` 不是固定指向某個名叫 `p1` 的 variable；即使同一個 object 被多個 references 指向，instance method 裡的 `this` 仍是當次 receiver object。
+
+## p.28 — Cascading Constructors：Constructor Chaining
+
+```java
+class Person {
+    String name;
+    int age;
+
+    Person() {
+        this("", 0); // 呼叫同 class 的另一個 constructor
+    }
+
+    Person(String name, int age) {
+        this.name = name;
+        this.age = age;
+    }
+}
+```
+
+執行 `new Person()` 時：先進入 no-argument constructor，再由 `this("", 0)` 委派給兩個 parameters 的 constructor，完成後返回。**這個過程只建立一個 object**，沒有因為呼叫兩個 constructors 就建立兩個 objects。
+
+目的在於集中初始化邏輯，避免多個 constructors 重複寫相同 assignments。這裡 `""` 是 empty String，與 `null` 不同。
+
+| 語法 | 用途 |
+|---|---|
+| `this.age` | 存取目前 object 的 field |
+| `this.getAge()` | 呼叫目前 object 的 instance method |
+| `this("", 0)` | 呼叫同 class 的另一個 constructor |
+
+本教材範例把 `this(...)` 放在 constructor 開頭，這是容易理解且可跨版本使用的寫法；不能讓 constructors 形成直接或間接的 recursive invocation。
 
 ## 課堂補充 — Person：Default Values、Getters / Setters 與 Constructor
 
