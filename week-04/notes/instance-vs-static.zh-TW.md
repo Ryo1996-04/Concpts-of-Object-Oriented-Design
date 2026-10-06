@@ -168,3 +168,7 @@ public static double square(double x) {
 | p.32 | Instance methods 與 object receiver |
 | p.33–34 | Static methods 與 instance member access 的限制 |
 | p.35 | MyMath 的 static 工具方法 |
+
+## 延伸閱讀
+
+[今日整合筆記](classes-and-objects.zh-TW.md) 已加入 Student、Car 與 reference variable 的完整名詞比較，以及 p.39 的 garbage collection / System.gc() 說明。
