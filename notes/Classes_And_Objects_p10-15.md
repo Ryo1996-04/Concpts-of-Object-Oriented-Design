@@ -151,6 +151,65 @@ Student s2 = new Student("Alice"); // OK：name 是 "Alice"
 
 **自己寫的 `Student()` 應稱為 no-argument constructor；default constructor 特指 compiler 自動提供的 constructor。**
 
+### 課堂範例：Rectangle、Constructor Overloading 與 this
+
+這個 Rectangle 範例示範兩個重點：**constructor overloading**，以及使用 **`this`** 區分同名的 field 和 parameter。
+
+以下是修正拼字後的完整 class，可存成 `Rectangle.java`：
+
+```java
+public class Rectangle {
+    public float length;
+    public float width;
+
+    // Constructor：兩個 parameters
+    public Rectangle(float l, float w) {
+        length = l;
+        width = w;
+    }
+
+    // No-argument constructor
+    public Rectangle() {
+        length = 0.0f;
+        width = 0.0f;
+    }
+
+    // Constructor：一個 parameter
+    public Rectangle(float width) {
+        length = 0.0f;
+        this.width = width; // 將 parameter 的值存入目前 object 的 field
+    }
+}
+```
+
+原始筆記有兩個需要修正的地方：`float 1` 應為 `float l`（小寫 L），並將對應的 assignment 改成 `length = l;`；`lenght` 應為 `length`。數字 `1` 不能作為 parameter name。
+
+**Constructor overloading：同一個 class 有多個 constructors，其 parameter lists 不同。** Compiler 根據 arguments 的數量及型別，選擇適用的 constructor。
+
+| Constructor | 使用方式 | 初始化後的 state |
+|---|---|---|
+| `Rectangle(float l, float w)` | `new Rectangle(3.0f, 2.0f)` | `length = 3.0f`、`width = 2.0f` |
+| `Rectangle()` | `new Rectangle()` | `length = 0.0f`、`width = 0.0f` |
+| `Rectangle(float width)` | `new Rectangle(2.0f)` | `length = 0.0f`、`width = 2.0f` |
+
+這些 object creation expressions 可以放在 `main` 或其他 method 內。數字後面的 `f` 表示這是 `float` literal，例如 `2.0f`；不加 `f` 的 `2.0` 預設是 `double`。
+
+**`this` 是目前 object 的 reference。** 在以下 assignment 中：
+
+```java
+this.width = width;
+```
+
+- `this.width`：目前 object 的 field。
+- 右側的 `width`：目前 constructor 收到的 parameter。
+- 整行意思：把 parameter 的值存入目前 object 的 field。
+
+當 parameter 與 field 同名時，parameter 會 **shadow** field 的名稱，因此需要 `this.width` 明確指定 field。如果寫成 `width = width;`，只會把 parameter 的值指派回 parameter，object 的 field 不會因此更新。
+
+原註解「this 可以呼叫自己」在這裡應改為「this 指向目前的 object」。`this.width` 是 field access；在 constructor 中使用 `this(...)`，才是呼叫同一個 class 的另一個 constructor，稱為 **constructor chaining**。
+
+這裡的 `Rectangle()` 是自行宣告的 **no-argument constructor**，並非 compiler 自動提供的 **default constructor**。若移除它但保留其他 constructors，`new Rectangle()` 就會造成 compile-time error。
+
 ## p.13 — Null Reference
 
 `null` 表示 reference 沒有指向任何 object。
