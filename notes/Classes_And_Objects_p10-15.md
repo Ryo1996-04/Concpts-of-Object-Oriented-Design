@@ -84,6 +84,73 @@ Circle c1 = new Circle();
 
 `new` 是 operator，不是 method。`new Circle()` 這個 expression 建立 object，並產生該 object 的 reference。
 
+### 補充：Default Constructor 與 No-Argument Constructor
+
+老師強調的規則可以寫成：
+
+> If you don't declare any constructors, Java provides a default constructor.
+> If you declare a constructor, Java no longer provides the default constructor automatically.
+
+對一般 Java class 而言，**只有在完全沒有宣告任何 constructor 時，Java compiler 才會自動提供 default constructor**。只要自行宣告任何 constructor，compiler 就不會再自動補上一個。
+
+**情況一：完全沒有宣告 constructor。**
+
+```java
+class Student {
+}
+
+// 在可存取 Student 的程式碼中：
+Student s = new Student(); // OK：使用 compiler 提供的 default constructor
+```
+
+**情況二：自行宣告帶 parameter 的 constructor。**
+
+```java
+class Student {
+    String name;
+
+    Student(String name) {
+        this.name = name;
+    }
+}
+
+// 在可存取 Student 的程式碼中：
+Student s1 = new Student("Alice"); // OK
+Student s2 = new Student();        // Compile-time error：沒有 no-argument constructor
+```
+
+`this.name` 是目前 object 的 field，右側的 `name` 是 constructor 的 parameter。
+
+**情況三：想同時支援兩種建立方式，就自行宣告兩個 constructors。**
+
+```java
+class Student {
+    String name;
+
+    Student() {
+        this.name = "Unknown";
+    }
+
+    Student(String name) {
+        this.name = name;
+    }
+}
+
+// 在可存取 Student 的程式碼中：
+Student s1 = new Student();        // OK：name 是 "Unknown"
+Student s2 = new Student("Alice"); // OK：name 是 "Alice"
+```
+
+同一個 class 宣告不同 parameter lists 的 constructors，稱為 **constructor overloading**。以上三個範例是各自獨立的情況；建立 objects 的 statements 應放在 method 等允許執行 statements 的位置。
+
+| 技術名詞 | 意義 |
+|---|---|
+| **Default constructor** | Class 未宣告任何 constructor 時，由 compiler 自動提供，沒有 parameters |
+| **No-argument constructor** | 沒有 parameters 的 constructor；可以自行宣告，default constructor 也屬於這一類 |
+| **Parameterized constructor** | 帶有 parameters 的 constructor，例如 `Student(String name)` |
+
+**自己寫的 `Student()` 應稱為 no-argument constructor；default constructor 特指 compiler 自動提供的 constructor。**
+
 ## p.13 — Null Reference
 
 `null` 表示 reference 沒有指向任何 object。
