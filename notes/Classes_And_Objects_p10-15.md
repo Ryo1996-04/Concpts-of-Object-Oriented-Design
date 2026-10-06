@@ -186,7 +186,6 @@ public class Rectangle {
 }
 ```
 
-原始筆記有兩個需要修正的地方：`float 1` 應為 `float l`（小寫 L），並將對應的 assignment 改成 `length = l;`；`lenght` 應為 `length`。數字 `1` 不能作為 parameter name。
 
 **Constructor overloading：同一個 class 有多個 constructors，其 parameter lists 不同。** Compiler 根據 arguments 的數量及型別，選擇適用的 constructor。
 
