@@ -1,6 +1,6 @@
-# Classes and Objects：p.10–28 學習筆記
+# Classes and Objects：p.10–28、p.39 與課堂整合筆記
 
-教材：`5_Classes_And_Objects.pdf`，第 10–28 頁。
+教材：`5_Classes_And_Objects.pdf`，第 10–28 頁與第 39 頁；p.29–35 的 instance/static 主題另見比較筆記。
 
 閱讀順序：p.10–18 為 object 與 reference 基礎；p.19–28 為 constructors 與 this。課堂 Rectangle 與 Person 補充範例另保留在本文。
 
@@ -9,6 +9,186 @@
 本文以英文保留 Java 技術名詞，搭配中文解釋。先前說明中的「引用」就是 **reference**。
 
 核心概念：**class 定義型別，`new` 建立 object，reference variable 保存指向 object 的 reference。**
+
+## 課堂整合 — Class、Object、Instance 與 Variables
+
+整合 2026-10-06 的補充筆記。對應 p.10–12 的 class / object / reference，以及 p.29–31 的 instance fields / static fields。以下 Student 與 Car 是獨立範例，同名 Student 定義不要合併在同一份 Java 檔案。
+
+### 1. 先記住核心概念
+
+- **Class（類別）**：定義物件結構與行為的設計圖。
+- **Object（物件）／Instance（實例）**：依照類別建立出來的實際物件。
+- **Instance variable（實例變數）**：屬於個別物件的資料，每個物件都有自己的一份。
+- **Static variable／Class variable（靜態變數／類別變數）**：屬於類別、由該類別的物件共用的資料。
+- **Reference variable（參考變數）**：保存物件參考的變數，用來存取物件；也可以是 `null`。
+
+> **Class 是設計圖 → Instance 是照設計圖做出來的東西 → Instance variables 是每個東西自己的資料。**
+
+### 2. Instance 和 Instance Variable 不一樣
+
+**Instance 是物件本身；instance variable 是屬於這個物件的變數。**
+
+以 `Student` 類別為例：
+
+```java
+class Student {
+    String name; // instance variable
+    int age;     // instance variable
+}
+```
+
+建立兩個物件（以下操作可放在 `main` 方法中）：
+
+```java
+Student s1 = new Student();
+Student s2 = new Student();
+
+s1.name = "Claire";
+s1.age = 25;
+
+s2.name = "John";
+s2.age = 30;
+```
+
+這裡有兩個不同的 `Student` instance，每個物件都有自己的 `name` 和 `age`。
+
+| 項目 | 意義 |
+|---|---|
+| `Student` | 類別，定義學生物件的結構 |
+| 每次執行 `new Student()` 所建立的物件 | `Student` 的 instance |
+| `s1`、`s2` | 保存物件參考的 reference variables |
+| `name`、`age` | 每個 `Student` 物件各自擁有的 instance variables |
+| `s1.name`、`s2.name` | 分別存取兩個物件的 `name` |
+
+> **精確說法：`s1` 和 `s2` 是參考變數；它們所指向的物件才是 instances。**
+
+### 3. 用 Car 範例理解物件各自擁有的資料
+
+```java
+class Car {
+    String color; // instance variable
+    int speed;    // instance variable
+}
+```
+
+建立與設定物件（放在方法中）：
+
+```java
+Car car1 = new Car();
+Car car2 = new Car();
+
+car1.color = "red";
+car1.speed = 60;
+
+car2.color = "blue";
+car2.speed = 80;
+```
+
+概念示意圖：
+
+```text
+Car class（設計圖）
+   │
+   ├── 建立物件 A ← car1 保存它的參考
+   │     ├── color = "red"
+   │     └── speed = 60
+   │
+   └── 建立物件 B ← car2 保存它的參考
+         ├── color = "blue"
+         └── speed = 80
+```
+
+修改 `car1.speed` 不會改變 `car2.speed`，因為這裡的兩個參考變數指向不同物件，各自擁有自己的實例變數。
+
+**Instance variable 之所以叫「實例變數」，就是因為每個 instance 都各自擁有一份。**
+
+### 4. Instance Variable 與 Static／Class Variable
+
+```java
+class Student {
+    String name;             // instance variable：每個學生自己的姓名
+    static int studentCount; // class variable：類別共用的計數資料
+}
+```
+
+使用範例（放在方法中）：
+
+```java
+Student s1 = new Student();
+Student s2 = new Student();
+
+s1.name = "Claire";
+s2.name = "John";
+
+Student.studentCount = 2;
+
+System.out.println(s1.name);              // Claire
+System.out.println(s2.name);              // John
+System.out.println(Student.studentCount); // 2
+```
+
+- `name` 沒有 `static`：每個 `Student` 物件都有自己的姓名。
+- `studentCount` 有 `static`：屬於 `Student` 類別，使用 `Student.studentCount` 存取能清楚表達這點。
+- `studentCount` **不會自動計算物件數量**；此例是手動設定為 `2`。若要自動計數，需要自行撰寫更新邏輯。
+
+### 5. 名詞比較表
+
+| 名稱 | 中文 | 是什麼 | 每個物件都有自己的一份嗎？ |
+|---|---|---|---|
+| Class | 類別 | 建立物件的設計圖 | 不適用 |
+| Object／Instance | 物件／實例 | 依照類別建立的實際物件 | 不適用 |
+| Instance variable | 實例變數 | 個別物件擁有的資料 | 是 |
+| Static／Class variable | 靜態變數／類別變數 | 屬於類別的共用資料 | 否 |
+| Reference variable | 參考變數 | 保存物件參考或 `null` 的變數 | 取決於宣告位置；此名稱描述的是它保存的值 |
+
+### 6. 拆解一行 Java 程式碼
+
+```java
+Student s1 = new Student();
+```
+
+| 程式碼片段 | 意義 |
+|---|---|
+| `Student` | `s1` 宣告使用的類別型別 |
+| `s1` | 參考變數 |
+| `new Student()` | 建立一個新的 `Student` 物件，並產生指向它的參考 |
+| `=` | 將右側的物件參考指派給 `s1` |
+
+接著：
+
+```java
+s1.name = "Claire";
+```
+
+意思是：透過 `s1` 找到它指向的物件，再將該物件的 instance variable `name` 設為 `"Claire"`。
+
+### 7. Object 和 Instance 有差別嗎？
+
+在 Java 初學階段，**object 和 instance 通常可以視為同一個東西的兩種說法**。
+
+- **Object**：強調「這是一個物件」。
+- **Instance**：強調「這個物件是某個類別的實例」。
+
+例如，`new Student()` 建立的是一個 object，也是一個 `Student` 的 instance。
+
+### 8. 記憶重點
+
+> **Class = 設計圖**  
+> **Object／Instance = 依照設計圖建立的物件**  
+> **Instance variable = 每個物件自己的資料**  
+> **Static／Class variable = 類別共用的資料**  
+> **Reference variable = 用來指向物件的變數**
+
+看到 `Student s1 = new Student();` 時，記得區分：
+
+```text
+s1              → 參考變數
+new Student()   → 建立物件並產生其參考
+s1 指向的物件    → Student 的 instance
+該物件的 name   → instance variable
+```
+
+補充：reference type 與 instance/static/local 是不同分類維度。例如 `String name` 可以同時是 instance field 與 reference variable；`int age` 是 instance field，但保存 primitive value。詳細比較見 [Instance 與 Static](instance-vs-static.zh-TW.md)。
 
 ## p.10 — Data Abstraction
 
@@ -602,6 +782,108 @@ class Person {
 | `this("", 0)` | 呼叫同 class 的另一個 constructor |
 
 本教材範例把 `this(...)` 放在 constructor 開頭，這是容易理解且可跨版本使用的寫法；不能讓 constructors 形成直接或間接的 recursive invocation。
+
+## p.39 — Garbage Collection 與 System.gc()
+
+### Garbage Collection 與 Garbage Collector 的差別
+
+**Garbage collection（GC）** 是自動回收不再可達 objects 所占記憶體的過程；**garbage collector** 是 JVM 中執行這項工作的機制。這讓 heap memory 可以再次被其他 objects 使用。
+
+判斷重點是 **reachability**。若 object 無法再由程式保留的有效 reference 路徑到達，就可能符合 garbage collection 條件。不能只看某個 variable 是否被設為 null，也不能只看 object 是否有其他 object 指向它。
+
+### 投影片 p.39：Reference Assignment 後發生什麼事？
+
+假設 Circle 有可使用的 no-argument constructor：
+
+```java
+Circle aCircle = new Circle(); // 建立 object P
+Circle bCircle = new Circle(); // 建立 object Q
+bCircle = aCircle;             // 複製 reference；兩者都指向 P
+```
+
+```text
+Before assignment:
+aCircle ----> P
+bCircle ----> Q
+
+After assignment:
+aCircle ----> P <---- bCircle
+              Q（若沒有其他可達路徑，成為 garbage collection 的候選）
+```
+
+`bCircle = aCircle` 改變的是 bCircle 保存的 reference。它沒有複製 P，也沒有立即刪除 Q；Q 在沒有其他可達 references 時才符合回收條件。
+
+這也連結到 p.15 的 aliasing。兩個 variables 指向同一個 object 時，把其中一個設成 null，另一個仍可能繼續使用該 object：
+
+```java
+aCircle = null;
+// bCircle 仍保存 P 的 reference；後續仍可透過它使用 P。
+```
+
+### System.gc()：請求 JVM 考慮回收
+
+正確大小寫是 **`System.gc()`**，System 的 S 要大寫：
+
+```java
+System.gc();
+```
+
+| 部分 | 意義 |
+|---|---|
+| `System` | java.lang 中的 class |
+| `.` | Dot operator / dot separator |
+| `gc()` | Static method invocation，沒有 arguments |
+| Return type | void，沒有可用來確認回收完成的 return value |
+
+`System.gc()` 是建議 JVM 花費努力回收未使用的 objects，**不是強制立即回收的指令**。它不保證回收哪個 object、回收多少記憶體，或何時完成。即使 method 已返回，也不能推論某個 object 已被回收。[Oracle System.gc() API](https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/System.html#gc())
+
+程式不呼叫 `System.gc()`，JVM 也會依需要管理 garbage collection；一般程式通常不需要手動要求。這個 method 不能指定「只回收 Q」，也不會使原本仍需要的 object 自動失去 references。
+
+### 可執行範例：觀察 Reference，而非宣稱回收已完成
+
+存成 `GcExample.java`：
+
+```java
+public class GcExample {
+    static class Circle {
+        double r;
+    }
+
+    public static void main(String[] args) {
+        Circle aCircle = new Circle(); // P
+        Circle bCircle = new Circle(); // Q
+
+        aCircle.r = 5;
+        bCircle = aCircle; // Q 失去此程式持有的 reference
+        System.out.println(aCircle == bCircle); // true
+
+        aCircle = null;
+        System.gc(); // 提出 GC request，並非回收完成通知
+        System.out.println(bCircle.r); // 5.0：P 仍可透過 bCircle 使用
+
+        bCircle = null; // 程式不再持有 P 的 reference
+        System.gc();
+        System.out.println("GC requested; completion is not guaranteed.");
+    }
+}
+```
+
+輸出：
+
+```text
+true
+5.0
+GC requested; completion is not guaranteed.
+```
+
+這個輸出驗證 reference assignment 與 field access 的行為，**不能用來證明 P 或 Q 已完成回收**。精確的執行時 object lifetime 也可能受 JVM 最佳化影響；本圖用來理解 source-level references。
+
+### 與 Static Counter 的關係及常見誤解
+
+- `Person.counter++` 是自己寫的計數邏輯。GC 回收 Person object 時不會自動呼叫 `counter--`，所以 counter 表示累計建立數量，不是存活數量。
+- `p = null` 是 reference assignment，不是 memory deallocation command。
+- 兩個 objects 即使互相 reference，若整組都沒有外部可達路徑，也可能被 GC 回收；GC 不是單純數 references 的數量。
+- GC 管理記憶體，不保證及時關閉檔案、network connections 等外部 resources；這些資源應明確 close，例如使用 try-with-resources。
 
 ## 課堂補充 — Person：Default Values、Getters / Setters 與 Constructor
 

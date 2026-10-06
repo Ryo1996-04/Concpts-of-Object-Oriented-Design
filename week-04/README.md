@@ -2,7 +2,7 @@
 
 ## 筆記
 
-[Classes and Objects：p.10–28 與課堂補充](notes/classes-and-objects.zh-TW.md)
+[Classes and Objects：p.10–28、p.39 與課堂整合](notes/classes-and-objects.zh-TW.md)
 
 涵蓋 reference、object creation、field access、method invocation、constructors、overloading 和 `this`，並保留課堂 Rectangle 與 Person 的說明。
 
@@ -29,3 +29,7 @@ java -cp week-04/bin RectangleTest
 ## Eclipse
 
 使用 File → Import → General → Existing Projects into Workspace，選取此 `week-04` 資料夾。Project name 為 `week-04`，source folder 是 `src`，output folder 是 `bin`。既有設定使用 JavaSE-25，需在 Eclipse 中配置對應 JDK。
+
+## 2026-10-06 補充
+
+主筆記整合了 Class、Object、Instance、instance variable、static variable、reference variable 的 Student / Car 範例，並新增 p.39 的垃圾回收圖解與 System.gc() request 說明。
