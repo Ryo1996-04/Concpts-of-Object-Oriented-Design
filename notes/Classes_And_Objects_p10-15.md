@@ -413,6 +413,140 @@ Radius=5.0 Circumference =31.400000000000002
 
 **在這些例子中，field name 後沒有 `()`；method invocation 有 `()`。Field access 與 method invocation 都會使用 `.`。**
 
+## 課堂補充 — Person：Default Values、Getters / Setters 與 Constructor
+
+以下兩個版本各自存為 `Person.java` 執行，不能把兩個 `public class Person` 放進同一個檔案。原始貼文的 HTML 空白編碼已還原，`System.***out***.println` 的格式標記也已整理為 Java 正確語法 `System.out.println`。
+
+### 版本一：原始程式與輸出
+
+```java
+public class Person {
+    public String fName; // [1] Reference field：default value 是 null
+    public int age;      // [2] int field：default value 是 0
+
+    // [3] 沒有宣告任何 constructor，compiler 會提供 default constructor。
+
+    public String getFName() {
+        return this.fName; // Getter：只回傳目前的 field value
+    }
+
+    public void setFName(String fName) {
+        this.fName = fName; // Setter：field = parameter
+    }
+
+    public int getAge() {
+        return this.age;
+    }
+
+    public void setAge(int age) {
+        this.age = age;
+    }
+
+    public static void main(String[] args) {
+        Person p1 = new Person(); // [4] 建立 object，但未指定姓名、年齡
+
+        // [5] 雖然定義了 setters，這裡並沒有呼叫它們。
+        System.out.println("The name of the person is :" + p1.getFName());
+        System.out.println("The age of the person is :" + p1.getAge());
+
+        /* 實際輸出：
+        The name of the person is :null
+        The age of the person is :0
+        */
+    }
+}
+```
+
+**為什麼是 `null` 和 `0`？** `fName` 與 `age` 是 instance fields。Object 建立時，fields 先取得各自 type 的 default value；這個程式沒有 field initializers，也沒有自訂 constructor 或 setter calls 去改變它們。因此 getters 回傳 `null` 和 `0`。字串串接時，`null` reference 會被顯示為文字 `null`。
+
+定義 method 不代表已經執行它。只有寫出 `p1.setFName(...)` 或 `p1.setAge(...)` 等 method invocation，setter 的內容才會執行。這個輸出是正常行為，不是 compile-time error 或 exception。
+
+### 版本二：依老師的「Define a Constructor」加入修正
+
+```java
+public class Person {
+    public String fName;
+    public int age;
+
+    // [修正 1] 自行宣告 parameterized constructor。
+    // Constructor 名稱與 class 相同，沒有 return type，連 void 都不寫。
+    public Person(String fName, int age) {
+        this.fName = fName; // 左側是目前 object 的 field，右側是 parameter
+        this.age = age;
+    }
+
+    // [修正 2] 明確提供 no-argument constructor，保留 new Person() 的用法。
+    // 這是自己寫的 constructor，不是 compiler 提供的 default constructor。
+    public Person() {
+        this.fName = "Unknown";
+        this.age = 18; // 18 是這個範例自訂的初始值，不是 Java default value
+    }
+
+    public String getFName() {
+        return this.fName;
+    }
+
+    public void setFName(String fName) {
+        this.fName = fName;
+    }
+
+    public int getAge() {
+        return this.age;
+    }
+
+    public void setAge(int age) {
+        this.age = age;
+    }
+
+    public static void main(String[] args) {
+        // [修正 3] Arguments 對應 constructor 的 parameters。
+        Person p1 = new Person("Alice", 20);
+        System.out.println("The name of the person is :" + p1.getFName());
+        System.out.println("The age of the person is :" + p1.getAge());
+
+        // [比較] 呼叫自己宣告的 no-argument constructor。
+        Person p2 = new Person();
+        System.out.println("The name of the person is :" + p2.getFName());
+        System.out.println("The age of the person is :" + p2.getAge());
+
+        // [補充] Object 建立後，仍可以透過 setter 修改 state。
+        p1.setAge(21);
+        System.out.println("Updated age:" + p1.getAge());
+
+        /* 實際輸出：
+        The name of the person is :Alice
+        The age of the person is :20
+        The name of the person is :Unknown
+        The age of the person is :18
+        Updated age:21
+        */
+    }
+}
+```
+
+此修正版同時展示兩種 constructors，屬於 **constructor overloading**。若只需要 `new Person("Alice", 20)`，可以只保留 parameterized constructor；但此時 `new Person()` 便不能使用，因為 compiler 不會再自動提供 default constructor。
+
+### 修改歷程與原因
+
+1. **觀察原始輸出**：`new Person()` 建立 object，getters 回傳 `null` 與 `0`。
+2. **確認原因**：兩個 fields 沒有指定初始值，程式也沒有呼叫 setters，因此保留 default values。Getter 負責讀取，不會自動產生姓名或年齡。
+3. **理解老師的修正方向**：「Define a constructor」是自行宣告 constructor，在 object creation 過程中初始化 fields。
+4. **加入 parameterized constructor**：用 `new Person("Alice", 20)` 將 arguments 傳入，再透過 `this.fName = fName`、`this.age = age` 設定 object 的 state。
+5. **補上 no-argument constructor 作比較**：若仍希望使用 `new Person()`，就明確宣告它，並自行決定初始值。`"Unknown"` 與 `18` 只是此處選用的範例值。
+6. **保留 getters / setters**：constructor 處理建立時的初始化，getter 讀取目前的 state，setter 在被呼叫時設定或修改 state。
+
+| 概念 | 本例的角色 |
+|---|---|
+| Default field values | `String` field 為 `null`，`int` field 為 `0` |
+| Default constructor | 未宣告任何 constructor 時，由 compiler 自動提供 |
+| Parameterized constructor | 建立 object 時接收姓名和年齡 |
+| No-argument constructor | 在此修正版中，明確設定 `"Unknown"` 和 `18` |
+| Getter | 回傳 field 的目前值 |
+| Setter | 被呼叫時修改 field 的值 |
+| `this` | 目前 object 的 reference，用來明確指定其 fields |
+
+Fields 有 default values；method 內的 local variables 必須在讀取前完成賦值。例如 `Person p1;` 只宣告 local variable，不能在未賦值時直接呼叫 `p1.getAge()`。
+
 ## 重點比較
 
 | 程式碼 | 發生什麼事 |
