@@ -29,6 +29,34 @@ Object 是 class 的 **instance**。`Circle` 如同設計圖，依照它建立�
 
 Java 程式可以透過 method calls 讓 objects 互動。
 
+### 補充：Message Passing（老師提到的「pass the message」）
+
+老師提到的「pass the message」，在 p.10–15 中最直接對應 p.11：objects 透過已定義的 methods 互動。這個概念稱為 **message passing**；在這裡，可以理解成透過 **method call** 請某個 object 執行操作。
+
+假設 `Circle` 定義了 `getArea()` instance method，而且 `aCircle` 指向一個有效的 Circle object：
+
+```java
+aCircle.getArea();
+```
+
+這就像向該 object 傳送「計算面積」的 message。
+
+| 組成 | 這個例子的意思 |
+|---|---|
+| **Receiver** | `aCircle` 指向的 object |
+| **Method** | `getArea()`，要求執行的操作 |
+| **Arguments** | 此例沒有；需要時可在括號內傳入資料 |
+
+例如，若 `Circle` 提供 `setRadius(double radius)` method：
+
+```java
+aCircle.setRadius(5.0);
+```
+
+這次的 receiver 仍是 `aCircle` 指向的 object，method 是 `setRadius`，argument 是 `5.0`，意思是請該 object 將半徑設為 `5.0`。Method 宣告中的 `radius` 則稱為 **parameter**。
+
+此處的 message passing 指 object 之間透過 method calls 互動，不代表一定涉及網路訊息或非同步傳送。
+
 投影片將 name 作為識別 object 的方式，這是簡化說法。更精確地說，variable 有 name，object 有 identity；同一個 object 可以被多個 reference variables 指向，見 p.15。
 
 ## p.12 — 建立 Object 的兩個步驟
