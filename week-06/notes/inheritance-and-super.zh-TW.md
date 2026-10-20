@@ -1,11 +1,11 @@
-# CSYE6200 筆記：Inheritance、super 與 protected
+# CSYE6200 筆記：Inheritance、super、protected 與 Overriding
 
 > 個人學習筆記，課堂內容以自己的話重新整理。本文不含投影片原文或圖片，標註的頁碼只用來對照課程講義；所有範例程式都是自己寫的。
 
 - 課程：CSYE6200（Fall 2026）
-- 單元：Inheritance and Polymorphism（前半：Inheritance）
-- 日期：2026-10-20
-- 可執行的範例程式：[`../src/`](../src)（Address、Person、Student、ClassA、ShadowingDemo）
+- 單元：Inheritance and Polymorphism（p.3–28：Inheritance 與 Overriding）
+- 日期：2026-10-20（課堂進度到 p.28）
+- 可執行的範例程式：[`../src/`](../src)（Address、Person、Student、ClassA、ShadowingDemo、Shape、Circle、Rectangle、ShapeTest）
 
 ## 目錄
 
@@ -18,11 +18,14 @@
 7. [存取權限與 protected（p.9–14）](#7-存取權限與-protectedp914)
 8. [super(...)：呼叫父類別的 constructor（p.15–18）](#8-super呼叫父類別的-constructorp1518)
 9. [super.member：存取父類別的成員（p.19–20）](#9-supermember存取父類別的成員p1920)
-10. [Constructor 呼叫順序（p.28）](#10-constructor-呼叫順序p28)
-11. [一個檔案一個 public class，main 要放哪](#11-一個檔案一個-public-classmain-要放哪)
-12. [預習：Single inheritance、Overriding、Class hierarchy（p.21–27）](#12-預習single-inheritanceoverridingclass-hierarchyp2127)
-13. [常見錯誤](#13-常見錯誤)
-14. [檢查清單](#14-檢查清單)
+10. [Single inheritance（p.21）](#10-single-inheritancep21)
+11. [Overriding（p.22–24）](#11-overridingp2224)
+12. [Overloading vs. Overriding（p.25）](#12-overloading-vs-overridingp25)
+13. [Class hierarchy（p.26–27）](#13-class-hierarchyp2627)
+14. [Constructor 呼叫順序（p.28）](#14-constructor-呼叫順序p28)
+15. [一個檔案一個 public class，main 要放哪](#15-一個檔案一個-public-classmain-要放哪)
+16. [常見錯誤](#16-常見錯誤)
+17. [檢查清單](#17-檢查清單)
 
 ---
 
@@ -269,7 +272,7 @@ Person count: 1
 ```
 
 - Student 裡沒有寫 `getFName()`，但 `s.getFName()` 可以用，因為是繼承來的。
-- `Person count` 是 1：建立 Student 時，Person 的 constructor 也會執行（見第 10 節），所以每個 Student 也被算成一個 Person。
+- `Person count` 是 1：建立 Student 時，Person 的 constructor 也會執行（見第 14 節），所以每個 Student 也被算成一個 Person。
 - `s.getAddress().getStreetName()` 是 **method chaining**：先取得 Address 物件，再對它呼叫方法。
 
 #### 改寫前後比較
@@ -410,7 +413,7 @@ class Derived extends Base {
 
 ### 用在被改寫的方法
 
-`super.方法()` 可以呼叫父類別版本的方法，在 overriding 時很常用（見第 12 節）。
+`super.方法()` 可以呼叫父類別版本的方法，在 overriding 時很常用（見第 11 節）。
 
 ### this 與 super 對照
 
@@ -425,7 +428,192 @@ class Derived extends Base {
 
 ---
 
-## 10. Constructor 呼叫順序（p.28）
+## 10. Single inheritance（p.21）
+
+- Java 的 class **只能有一個直接父類別**：`extends` 後面只能接一個 class。
+- 有些語言允許 **multiple inheritance**（同時繼承好幾個父類別），但兩個父類別如果有同名的欄位或方法，子類別就不知道該用哪一個，必須另外處理這種衝突。
+- Java 選擇不支援 class 的多重繼承。需要類似效果時，改用 **interface**（之後的單元會教）。
+
+```java
+class Circle extends Shape { }              // ✅ 一個父類別
+class Circle extends Shape, Drawable { }    // ❌ 編譯錯誤
+```
+
+「只有一個直接父類別」不代表只能有一層。Circle 繼承 Shape2D、Shape2D 再繼承 Shape 是可以的（見第 13 節）。
+
+---
+
+## 11. Overriding（p.22–24）
+
+### 定義
+
+**Overriding（改寫）**：子類別寫一個和父類別方法**簽名（signature）完全相同**的方法，用自己的版本取代父類別的版本。
+
+- **Signature** = 方法名稱 + 參數的數量、型別、順序
+- 簽名必須相同，**方法內容（body）可以完全不同**
+- 被 override 的是 **method**。欄位（attribute）不能 override，子類別宣告同名欄位只會變成 shadowing（第 9 節），應該避免
+
+### 課堂範例：Shape / Circle / Rectangle
+
+Circle 和 Rectangle 都繼承 Shape。Shape 有一個 `area()` method，兩個子類別各自用自己的公式改寫它。
+
+```
+              ┌──────────────┐
+              │    Shape     │
+              ├──────────────┤
+              │ + area()     │
+              └──────────────┘
+                 ▲        ▲
+                 │        │
+   ┌─────────────┴─┐  ┌───┴──────────────┐
+   │    Circle     │  │    Rectangle     │
+   ├───────────────┤  ├──────────────────┤
+   │ - radius      │  │ - width, height  │
+   ├───────────────┤  ├──────────────────┤
+   │ + area()      │  │ + area()         │  ← 子類別又列一次 area()，代表 override
+   └───────────────┘  └──────────────────┘
+```
+
+```java
+public class Shape {
+    public double area() {
+        return 0;     // 一般的「形狀」沒有固定的面積公式，先回傳 0
+    }
+}
+
+public class Circle extends Shape {
+    private double radius;
+
+    public Circle(double radius) {
+        this.radius = radius;
+    }
+
+    @Override
+    public double area() {                    // 名稱、參數、回傳型別都和 Shape 的 area() 相同
+        return Math.PI * radius * radius;     // 內容換成圓的公式
+    }
+}
+
+public class Rectangle extends Shape {
+    private double width;
+    private double height;
+
+    public Rectangle(double width, double height) {
+        this.width = width;
+        this.height = height;
+    }
+
+    @Override
+    public double area() {
+        return width * height;                // 內容換成矩形的公式
+    }
+}
+```
+
+### 執行哪個版本，由物件決定
+
+```java
+Shape s1 = new Circle(2);
+Shape s2 = new Rectangle(3, 4);
+Shape s3 = new Shape();
+
+System.out.println(s1.area());   // 12.566370614359172：Circle 的 area()
+System.out.println(s2.area());   // 12.0：Rectangle 的 area()
+System.out.println(s3.area());   // 0.0：Shape 自己的 area()
+```
+
+三個變數的型別都是 `Shape`，但 Java 執行時會看**物件實際是哪個 class**，再決定呼叫哪個版本的 `area()`。
+
+這樣做的好處：處理一堆不同的形狀時，不用逐一判斷「它是圓還是矩形」，直接對每個物件呼叫 `area()`，各自會用自己的公式。這是下一個主題 **Polymorphism（多型）** 的基礎。
+
+### Override 的規則
+
+| 規則 | 說明 |
+|---|---|
+| 名稱相同 | 都叫 `area` |
+| 參數完全相同 | 數量、型別、順序都一樣；參數不同就變成 overload，不是 override |
+| 回傳型別相同 | 都是 `double` |
+| 存取權限不能更嚴格 | 父類別是 `public`，子類別不能改成 `protected` 或 `private` |
+| 只能 override 繼承得到的方法 | `private` 方法子類別看不到，不能 override；`static`、`final` 方法也不行 |
+
+### 加上 `@Override`
+
+`@Override` 不是必要的，但建議每次都加。它告訴編譯器「我打算改寫父類別的方法」：
+
+```java
+@Override
+public double aera() { ... }   // ❌ 編譯錯誤：父類別沒有 aera()，拼錯字馬上被抓到
+```
+
+如果沒加 `@Override`，拼錯的 `aera()` 會被當成一個新方法，不會報錯。結果呼叫 `area()` 時跑的還是父類別的版本，這種 bug 很難找。
+
+### 用 `super.方法()` 呼叫父類別原本的版本
+
+Override 之後，子類別裡還是可以用 `super.方法()` 呼叫父類別的版本。常見的用法是「先加上自己的處理，再交給父類別」：
+
+```java
+public class Student extends Person {
+    // ...（constructor 等省略）
+
+    @Override
+    public void setAge(int age) {
+        if (age <= 0) {
+            System.out.println("Invalid age");
+            return;                 // 不合法就不設定
+        }
+        super.setAge(age);          // 合法才交給 Person 原本的 setAge
+    }
+}
+```
+
+> 寫這種檢查時，要記得不合法的情況要 `return`（或用 `else`）。否則印出警告之後，程式還是會繼續往下執行，把不合法的值存進去。
+
+---
+
+## 12. Overloading vs. Overriding（p.25）
+
+兩個名詞很像，但完全是不同的東西：
+
+| | Overloading（多載） | Overriding（改寫） |
+|---|---|---|
+| 位置 | **同一個 class** 裡 | 父類別和子類別之間 |
+| 方法名稱 | 相同 | 相同 |
+| 參數 | **不同** | **完全相同** |
+| 決定呼叫哪個 | 看傳入的參數 | 看物件實際的型別 |
+| 用途 | 同一種操作，接受不同的資料 | 同一種操作，不同型別的物件有不同做法 |
+
+```java
+public class Circle extends Shape {
+    public Circle() { this(1); }                          // overload：同一個 class，
+    public Circle(double radius) { this.radius = radius; } // 參數不同的兩個 constructor
+
+    @Override
+    public double area() { ... }                          // override：取代 Shape 的 area()
+}
+```
+
+---
+
+## 13. Class hierarchy（p.26–27）
+
+- 子類別也可以再當別人的父類別，形成多層的 **class hierarchy**：
+
+```
+                Shape
+              /       \
+         Shape2D      Shape3D
+        /   |   \      /    \
+   Circle Rectangle Triangle Cube Sphere
+```
+
+- 同一個父類別的子類別叫 **siblings**（例如 Circle 和 Rectangle）。它們彼此**沒有**繼承關係：Circle 不能使用 Rectangle 的 `width`。
+- 繼承會一路往下傳：子類別擁有**所有祖先**的成員。Circle 同時擁有 Shape2D 和 Shape 的東西。
+- **共同的特性要放在合理範圍內最高的那一層**。例如每種形狀都有面積，所以 `area()` 放在 Shape；只有平面圖形才有周長，`perimeter()` 就適合放在 Shape2D。
+- 沒有一種繼承結構適用所有情況，要依照程式的需求設計。
+
+---
+
+## 14. Constructor 呼叫順序（p.28）
 
 也稱為 **constructor chaining**（課堂上說 cascade）。
 
@@ -484,7 +672,7 @@ ClassC           C()  ──┘  ← new ClassC()     ③ C() 的內容
 
 ---
 
-## 11. 一個檔案一個 public class，main 要放哪
+## 15. 一個檔案一個 public class，main 要放哪
 
 ### 規則
 
@@ -495,7 +683,7 @@ ClassC           C()  ──┘  ← new ClassC()     ③ C() 的內容
 
 ### main 放在哪
 
-像第 10 節的例子，檔名是 `ClassA.java`，就把 `main` 放在 `public class ClassA` 裡。在 Eclipse 按 **Run As → Java Application** 時，執行的就是這個 main。
+像第 14 節的例子，檔名是 `ClassA.java`，就把 `main` 放在 `public class ClassA` 裡。在 Eclipse 按 **Run As → Java Application** 時，執行的就是這個 main。
 
 - main 放在 ClassA 裡，**不代表會建立 ClassA 物件**。`main` 是 `static`，屬於 class 本身，不需要物件就能執行。
 - main 裡可以 new 同一個 package 的任何 class，例如 `new ClassC()`。
@@ -503,67 +691,11 @@ ClassC           C()  ──┘  ← new ClassC()     ③ C() 的內容
 
 ### 實際寫專案時
 
-每個 public class 各自一個檔案（Address.java、Person.java、Student.java），是最常見的做法。把多個 class 寫在同一個檔案，通常只用在像第 10 節這種小型示範。
+每個 public class 各自一個檔案（Address.java、Person.java、Student.java），是最常見的做法。把多個 class 寫在同一個檔案，通常只用在像第 14 節這種小型示範。
 
 ---
 
-## 12. 預習：Single inheritance、Overriding、Class hierarchy（p.21–27）
-
-> 以下是課堂還沒講到的部分，先簡單整理。
-
-### Single inheritance（p.21）
-
-- Java 的 class **只能有一個父類別**（`extends` 後面只能接一個 class）。
-- 有些語言支援 multiple inheritance（同時繼承多個父類別），但兩個父類別有同名成員時會衝突，Java 不支援這種做法。
-- 需要類似效果時，Java 使用 **interface**（之後會教）。
-
-### Overriding（p.22–24）
-
-**Overriding（改寫）**：子類別定義一個和父類別方法**簽名（signature）完全相同**的方法，用自己的版本取代父類別的版本。
-
-- **Signature** = 方法名稱 + 參數的數量、型別、順序
-- 實際執行哪個版本，由**物件本身的型別**決定
-- 在子類別裡可以用 `super.方法()` 呼叫父類別原本的版本
-
-```java
-public class Student extends Person {
-    // ...（constructor 等省略）
-
-    @Override
-    public void setAge(int age) {
-        if (age <= 0) {
-            System.out.println("Invalid age");
-            return;                 // 不合法就不設定
-        }
-        super.setAge(age);          // 合法才交給 Person 原本的 setAge
-    }
-}
-```
-
-`@Override` 可寫可不寫，但建議加上：如果簽名打錯、其實沒有改寫到父類別的方法，編譯器會報錯提醒。
-
-欄位也有類似的現象，叫 **shadowing variables**（第 9 節），但應該避免。
-
-### Overloading vs. Overriding（p.25）
-
-| | Overloading（多載） | Overriding（改寫） |
-|---|---|---|
-| 位置 | **同一個 class** 裡 | 父類別和子類別之間 |
-| 方法名稱 | 相同 | 相同 |
-| 參數 | **不同** | **完全相同** |
-| 用途 | 同一種操作，接受不同的資料 | 同一種操作，不同型別的物件有不同做法 |
-
-### Class hierarchy（p.26–27）
-
-- 子類別也可以再當別人的父類別，形成多層的 **class hierarchy**（例如第 2 節的 Shape 繼承樹）。
-- 同一個父類別的兩個子類別叫 **siblings**（例如 Circle 和 Triangle），它們彼此**沒有**繼承關係。
-- 繼承會一路往下傳：子類別會擁有**所有祖先**的成員（Circle 同時擁有 Shape2D 和 Shape 的成員）。
-- 共同的特性應該盡量放在**合理範圍內最高的那一層**。
-- 沒有一種繼承結構適用所有情況，要看需求設計。
-
----
-
-## 13. 常見錯誤
+## 16. 常見錯誤
 
 | 錯誤寫法 | 問題 | 正確寫法 |
 |---|---|---|
@@ -575,10 +707,13 @@ public class Student extends Person {
 | 父類別只有帶參數的 constructor，子類別沒寫 `super(...)` | `Implicit super constructor ... is undefined` | 明確寫出 `super(...)` |
 | 把兩個 `public class` 寫在同一個檔案 | `must be defined in its own file` | 拆成兩個檔案，或拿掉其中一個的 `public` |
 | 父類別欄位是 `private`，子類別寫 `this.欄位 = ...` | `The field ... is not visible` | 改用 `super(...)`、setter，或把欄位改成 `protected` |
+| 想 override 卻把方法名稱拼錯（`aera()`），又沒加 `@Override` | 變成一個新方法，呼叫 `area()` 時還是跑父類別的版本，不會報錯 | 每個 override 都加 `@Override` |
+| 想 override 卻改了參數（`area(int x)`） | 變成 overload，父類別的 `area()` 沒被取代 | 參數要和父類別完全相同 |
+| override 時把 `public` 改成 `protected` 或 `private` | 編譯錯誤：存取權限不能比父類別更嚴格 | 維持相同或更寬的權限 |
 
 ---
 
-## 14. 檢查清單
+## 17. 檢查清單
 
 - [ ] 每個 public class 的名稱和檔名相同
 - [ ] 相關的 class 放在同一個 package
@@ -587,4 +722,6 @@ public class Student extends Person {
 - [ ] 子類別 constructor 的第一行是 `super(...)`，參數對應到父類別的 constructor
 - [ ] 每個 setter 都是 `this.欄位 = 參數;`
 - [ ] 欄位的存取權限：只給自己用 → `private`；子類別需要直接用 → `protected`；盡量不要用 `public`
+- [ ] 子類別要改寫的方法：名稱、參數、回傳型別和父類別相同，並加上 `@Override`
 - [ ] 執行後確認：建立子類別物件時，父類別的 constructor 也有執行
+- [ ] 執行後確認：父類別型別的變數指向子類別物件時，呼叫的是子類別 override 的版本

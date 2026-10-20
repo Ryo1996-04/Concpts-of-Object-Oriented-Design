@@ -8,7 +8,7 @@ Java 課堂程式與學習筆記，依週次整理。筆記以英文技術名詞
 |---|---|---|---|
 | [Week 3](week-03/README.md) | Arrays, Strings, and I/O | [src](week-03/src) | [繁體中文](week-03/notes/notes.zh-TW.md) · [English](week-03/notes/notes.en.md) |
 | [Week 4](week-04/README.md) | Classes, Objects, Constructors, Static Fields | [src](week-04/src) | [p.10–28、p.39 筆記](week-04/notes/classes-and-objects.zh-TW.md) · [Instance / Static](week-04/notes/instance-vs-static.zh-TW.md) |
-| [Week 6](week-06/README.md) | Inheritance, super, and protected | [src](week-06/src) | [Inheritance / super / protected](week-06/notes/inheritance-and-super.zh-TW.md) |
+| [Week 6](week-06/README.md) | Inheritance, super, protected, Overriding | [src](week-06/src) | [Inheritance / super / Overriding](week-06/notes/inheritance-and-super.zh-TW.md) |
 
 ## Directory structure
 
