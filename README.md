@@ -9,6 +9,7 @@ Java 課堂程式與學習筆記，依週次整理。筆記以英文技術名詞
 | [Week 3](week-03/README.md) | Arrays, Strings, and I/O | [src](week-03/src) | [繁體中文](week-03/notes/notes.zh-TW.md) · [English](week-03/notes/notes.en.md) |
 | [Week 4](week-04/README.md) | Classes, Objects, Constructors, Static Fields | [src](week-04/src) | [p.10–28、p.39 筆記](week-04/notes/classes-and-objects.zh-TW.md) · [Instance / Static](week-04/notes/instance-vs-static.zh-TW.md) |
 | [Week 6](week-06/README.md) | Inheritance, super, protected, Overriding | [src](week-06/src) | [Inheritance / super / Overriding](week-06/notes/inheritance-and-super.zh-TW.md) |
+| [Week 9](week-09/README.md) | Enum Types；main、args 與 Scanner；Exception Handling | [src](week-09/src) | [Enum](week-09/notes/enum.zh-TW.md) · [main / Scanner](week-09/notes/main-and-scanner.zh-TW.md) · [Exception Handling](week-09/notes/exception-handling.zh-TW.md) |
 
 ## Directory structure
 
@@ -27,7 +28,11 @@ Java 課堂程式與學習筆記，依週次整理。筆記以英文技術名詞
 │   ├── .project
 │   ├── .classpath
 │   └── .settings/
-└── week-06/
+├── week-06/
+│   ├── README.md
+│   ├── src/
+│   └── notes/
+└── week-09/
     ├── README.md
     ├── src/
     └── notes/
