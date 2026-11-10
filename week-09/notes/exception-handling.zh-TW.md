@@ -519,6 +519,93 @@ error: exception IOException is never thrown in body of corresponding try statem
 
 兩種混用時，順序要**由下往上**：圖上越下層（子類別）的 catch 寫在越前面，`catch (Exception e)` 放最後（第 12 節）。
 
+### 4. 課堂實驗：把 p.16 的 try…catch 註解掉
+
+老師用 p.16 的程式碼，把 try…catch 註解掉，比較兩者的差別。下面兩個版本的 `main` 最後都多加了一行 `System.out.println("end of main");`，用來看程式有沒有跑完（這行是自己加的，講義沒有）。
+
+```java
+// try {
+    System.out.println("enter the first number");
+    int num1 = input.nextInt();
+    System.out.println("enter the second number");
+    int num2 = input.nextInt();
+    int result = div(num1, num2);
+    System.out.println(result);
+// }
+// catch (Exception e) {
+//     System.err.println(e);
+// }
+System.out.println("end of main");
+```
+
+**註解掉之後照樣編譯通過**：這裡可能發生的 `ArithmeticException`、`InputMismatchException` 都是 **unchecked**，編譯器不強迫處理。如果 try 裡是 `FileReader` 這種 checked exception，註解掉就會編譯失敗（第 6 節）。
+
+**三種輸入的實際結果**
+
+| 輸入 | 有 try…catch | 沒有 try…catch |
+|---|---|---|
+| `10 2` | `5` → `end of main` | **完全一樣**：`5` → `end of main` |
+| `10 0` | `java.lang.ArithmeticException: / by zero` → `end of main` | 印出完整 stack trace，**沒有** `end of main` |
+| `10 abc` | `java.util.InputMismatchException` → `end of main` | 印出完整 stack trace，**沒有** `end of main` |
+| exit code | 三種都是 `0`（正常結束） | 出錯時是 `1`（異常終止） |
+
+沒出錯時兩個版本沒有任何差別，try…catch 只在 exception 發生時才有作用。
+
+**沒有 try…catch，輸入 `10 0`**
+
+```text
+Exception in thread "main" java.lang.ArithmeticException: / by zero
+	at Test.div(Test.java:4)
+	at Test.main(Test.java:13)
+```
+
+1. `div()` 裡的 `a / b` 產生 `ArithmeticException` 物件。
+2. `div()` 沒有 catch，exception 傳回呼叫它的 `main`（第 13 行）。
+3. `main` 也沒有 catch，exception 傳出 `main`。
+4. 沒有人接住，JVM 印出 stack trace，**程式異常終止**。`System.out.println(result)` 和 `end of main` 都沒有執行（p.13）。
+
+**沒有 try…catch，輸入 `10 abc`**
+
+```text
+Exception in thread "main" java.util.InputMismatchException
+	at java.base/java.util.Scanner.throwFor(Scanner.java:977)
+	at java.base/java.util.Scanner.next(Scanner.java:1632)
+	at java.base/java.util.Scanner.nextInt(Scanner.java:2297)
+	at java.base/java.util.Scanner.nextInt(Scanner.java:2251)
+	at Test.main(Test.java:12)
+```
+
+exception 是在 **Java 內建的 Scanner 裡面**產生的，所以 stack trace 比較長。
+
+> **看 stack trace 的技巧**：開頭是 `java.base/` 的行是 JDK 內部的程式碼，可以跳過。往下找**第一行是自己的 class**，這裡是 `Test.main(Test.java:12)`，也就是 `int num2 = input.nextInt();`，問題就出在這一行。
+
+**有 try…catch，同樣輸入 `10 0`**
+
+```text
+java.lang.ArithmeticException: / by zero
+end of main
+```
+
+1. exception 一樣在 `div()` 產生，傳回 `main`。
+2. `catch (Exception e)` 的型別符合，接住了。
+3. catch 裡 `System.err.println(e)` 只印出一行「類別名稱: 訊息」，不是整段 stack trace。
+4. 從 catch 後面繼續往下，印出 `end of main`，**程式正常結束**。
+
+try 裡的 `System.out.println(result)` 還是被跳過（termination model，第 10 節），但 try…catch **外面**的程式碼可以繼續執行。
+
+**整理**
+
+| | 有 try…catch | 沒有 try…catch |
+|---|---|---|
+| 能不能編譯 | 能 | 能（因為是 unchecked） |
+| 沒出錯時 | 正常 | 正常，兩版一樣 |
+| 出錯時誰處理 | 自己寫的 catch | 沒人處理，交給 JVM |
+| 印出什麼 | catch 裡決定印什麼 | JVM 印出完整 stack trace |
+| 出錯之後 | 繼續執行 catch 後面的程式 | **立刻終止**，後面都不執行 |
+| 結束方式 | 正常結束（exit code 0） | 異常終止（exit code 1） |
+
+**重點**：exception 一樣會發生，差別只在**發生之後有沒有人接住**。有接住，程式可以決定怎麼處理再繼續（p.13 的「回到正常」）；沒接住，程式就直接崩潰。
+
 ## 10. 執行流程與 Termination Model（p.17、p.27）
 
 | 情況 | 流程 |
