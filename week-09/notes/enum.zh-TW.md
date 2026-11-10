@@ -4,7 +4,7 @@
 
 - 課程：CSYE6200（Fall 2026）
 - 單元：ArrayList; Abstract classes; Interfaces; Enums（`8_Abstract classes And Interfaces.pdf`，本篇是 p.25–31 的 Enum）
-- 日期：2026-11-10（本週從 Enum 開始；同一份講義的 p.1–24 是上週內容）
+- 日期：2026-11-10（本週從 Enum 開始；同一份講義的 p.1–24 是上週內容，見 [Week 8 筆記](../../week-08/notes/arraylist-abstract-interfaces.zh-TW.md)）
 - 可執行的範例程式：[`../src/`](../src)（Day、TrafficLight）
 
 ## 目錄
