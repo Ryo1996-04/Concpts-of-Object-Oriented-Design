@@ -5,9 +5,9 @@
 > 個人學習筆記，課堂內容以自己的話重新整理。本文不含投影片原文或圖片，標註的頁碼只用來對照課程講義；所有範例程式都是自己寫的，錯誤訊息與輸出都是實際用 `javac` / `java`（JDK 25）跑出來的。
 
 - 課程：CSYE6200（Fall 2026）
-- 單元：Generics（`10_Generics.pdf`，共 21 頁；p.1–8 逐頁整理在第 1–7 節，p.9–12 的 erasure、`Comparable`、upper bound 依課堂白板整理在第 11 節，p.13 overloading 依課堂範例整理在第 12 節，p.14 起待續）
-- 日期：2026-11-17（課堂進度到 p.13；課堂討論與白板：C 語言編譯、static／late binding、編譯器與 JVM 的順序、找最大值練習、Comparable 與 upper bound，見第 11 節；課堂範例 Max.java 見第 12 節）
-- 可執行的範例程式：[`../src/`](../src)（PrintArrayOverload、GenericPrint、FindMax、Max）
+- 單元：Generics（`10_Generics.pdf`，共 21 頁；p.1–8 逐頁整理在第 1–7 節，p.9–12 的 erasure、`Comparable`、upper bound 依課堂白板整理在第 11 節，p.13 overloading 依課堂範例整理在第 12 節，p.14–15 generic class 與 `new E[size]` 整理在第 13 節，p.16 起待續）
+- 日期：2026-11-17（課堂進度到 p.15；課堂討論與白板：C 語言編譯、static／late binding、編譯器與 JVM 的順序、找最大值練習、Comparable 與 upper bound，見第 11 節；課堂範例 Max.java 與 Circle 見第 12 節；generics 概念、generic class、`new E[size]`、E 只存在於 compile time 見第 13 節）
+- 可執行的範例程式：[`../src/`](../src)（PrintArrayOverload、GenericPrint、FindMax、Max、Circle、Shape、OrderPair、GenericStack）
 - 先備：Week 5 Method Overloading、Wrapper Classes；Week 8 [ArrayList 的 Generics 補充](../../week-08/notes/arraylist-abstract-interfaces.zh-TW.md#補充generics泛型)
 
 ## 目錄
@@ -24,6 +24,7 @@
 10. [檢查清單](#10-檢查清單)
 11. [課堂討論與白板：C 語言編譯、Binding、找最大值、Upper bound](#11-課堂討論與白板c-語言編譯binding找最大值upper-bound)
 12. [課堂範例：Max.java（同名的一般方法與 generic method，p.13）](#12-課堂範例maxjava同名的一般方法與-generic-methodp13)
+13. [Generics 的概念、Generic class 與「E 只存在於 compile time」（p.14–15）](#13-generics-的概念generic-class-與e-只存在於-compile-timep1415)
 
 ---
 
@@ -297,6 +298,14 @@ error: cannot find symbol
   兩頁合在一起要執行時，要寫成 `public static <E> void printArray(E[] inputArray)`。
 
 - **p.6 的 `String args[]`**：這是 C 風格的陣列宣告，Java 允許，和 `String[] args` 完全一樣。一般慣例寫 `String[] args`。
+
+- **p.15 的 `int size = ...`**：講義把 `size` 宣告成 `private final int size;`，constructor 裡卻寫 `int size = s > 0 ? s : 10;`。這是另外宣告一個**同名的 local variable**（shadowing），final 欄位 `size` 從來沒有被賦值，所以會編譯錯誤：
+
+  ```text
+  error: variable size might not have been initialized
+  ```
+
+  要寫成 `size = s > 0 ? s : 10;`（不加 `int`），或 `this.size = ...`（見[第 13 節第 3 小節](#3-p15為什麼不能寫-elements--new-esize)）。
 
 ## 9. 常見錯誤
 
@@ -877,6 +886,221 @@ error: incompatible types: String cannot be converted to Circle
 - [ ] 改寫 `toString()`：`public String toString()`，加上 `@Override`
 - [ ] 分得清 raw `Comparable`（要轉型，錯誤在執行時才出現）和 `Comparable<Circle>`（不用轉型，編譯時就擋下）
 
+## 13. Generics 的概念、Generic class 與「E 只存在於 compile time」（p.14–15）
+
+這一節整理課堂上的提問：generics 到底是什麼、為什麼用 `< >`、generic class 怎麼寫，以及 p.15 為什麼不能寫 `new E[size]`。
+
+### 1. Generics 的概念：把型別當成參數
+
+平常寫方法，參數傳的是**值**；generics 多了一種參數，傳的是**型別**。
+
+| | 一般參數 | 型別參數（generics） |
+|---|---|---|
+| 宣告 | `void f(int x)` 的 `x` | `<E>`、`<K, V>` |
+| 使用時代入 | 值，例如 `f(5)` | 型別，例如 `Integer`、`String` |
+| 好處 | 同一段程式處理不同的**值** | 同一段程式處理不同的**型別** |
+
+它解決兩個問題，也就是 p.7 的兩個好處：不用重複寫（一個方法取代多個 overload），以及型別錯了在編譯時就抓到。
+
+**為什麼用 `< >`**
+
+Java 的每一種括號都已經有固定用途，型別參數需要一個不會混淆的符號：
+
+| 括號 | 用途 |
+|---|---|
+| `( )` | 傳**值**：方法參數、呼叫 |
+| `[ ]` | 陣列 |
+| `{ }` | 程式區塊、陣列初始值 |
+| **`< >`** | 傳**型別** |
+
+這個寫法沿用自 C++ 的 template。讀的時候可以把 `<>` 唸成「of」：`ArrayList<String>` 就是「a list of String」。
+
+### 2. Generic class：`OrderPair<K, V>`（p.14）
+
+前面的 `printArray`、`findMax` 是 **generic method**，型別參數只在那一個方法裡有效。**Generic class** 的型別參數則在**整個 class** 裡都能用（p.14、p.17）。範例：[`OrderPair.java`](../src/OrderPair.java)（老師的 Eclipse 分頁裡也有 `OrderPair.java`）。
+
+```java
+public class OrderPair<K, V> {          // 宣告兩個型別參數：K（Key）、V（Value）
+    private K key;                       // K 當 field 型別
+    private V value;                     // V 當 field 型別
+
+    public OrderPair(K key, V value) {   // K、V 當參數型別
+        this.key = key;
+        this.value = value;
+    }
+
+    public K getKey()   { return key; }  // K 當 return type
+    public V getValue() { return value; }
+}
+```
+
+使用時才決定 K、V 是什麼：
+
+```java
+OrderPair<String, Integer> p1 = new OrderPair<>("age", 25);   // K=String, V=Integer
+OrderPair<String, String>  p2 = new OrderPair<>("name", "Ada"); // K=String, V=String
+
+String k = p1.getKey();     // 不用轉型
+int v = p1.getValue();      // Integer 自動 unboxing 成 int
+```
+
+放錯型別會在編譯時被擋下：
+
+```text
+error: incompatible types: cannot infer type arguments for OrderPair<>
+        OrderPair<String, Integer> p3 = new OrderPair<>("age", "25");
+```
+
+`OrderPair` 的輸出：
+
+```text
+age -> 26
+age = 25
+name = Ada
+```
+
+**Generic method 和 generic class 的位置差別**
+
+| | `< >` 寫在哪 | 範圍 | 例子 |
+|---|---|---|---|
+| Generic method | return type **前面** | 只在那個方法 | `public static <E> void printArray(E[] a)` |
+| Generic class | class 名稱**後面** | 整個 class | `public class OrderPair<K, V>` |
+
+- **多個型別參數用逗號分開**，就是 p.8 的規則一。
+- **`new OrderPair<>(...)` 的空 `<>` 叫 diamond operator**：左邊已經寫了 `<String, Integer>`，右邊由編譯器推斷，不用再寫一次。
+- 同一份 class 可以變成很多種型別（p.7：一份 class 宣告代表一組相關的型別）。你已經用過的 generic class：`ArrayList<E>`（Week 8），之後會遇到 `HashMap<K, V>`。
+
+### 3. p.15：為什麼不能寫 `elements = new E[size];`
+
+p.15 的 `Stack<E>` 用陣列存元素，建立陣列時寫的是 `(E[]) new Object[size]`。直接寫 `new E[size]` 會編譯錯誤：
+
+```text
+error: generic array creation
+        elements = new E[size];
+                   ^
+```
+
+**原因：陣列要知道型別，但 E 已經被擦掉了**
+
+1. **E 在執行時已經不存在**：p.9 的 erasure 會把 E 擦成 `Object`。到了 run time，JVM 不知道這個 stack 是 `Stack<String>` 還是 `Stack<Integer>`。
+2. **陣列在執行時一定要知道自己的元素型別**：陣列會記住「我是 `String[]`」，每次放東西進去都會檢查。
+
+   ```java
+   Object[] arr = new String[1];
+   arr[0] = 10;   // 編譯會過，執行時丟出 ArrayStoreException
+   ```
+
+   ```text
+   ArrayStoreException: java.lang.Integer
+   ```
+
+3. **所以 `new E[size]` 做不到**：JVM 要建立陣列時必須知道是 `String[]` 還是 `Integer[]`，但 E 已經沒有資訊了，所以編譯器直接禁止。
+
+**講義的解法：先建 `Object[]`，再轉型**
+
+```java
+elements = (E[]) new Object[size];
+```
+
+- `new Object[size]` 不需要知道 E，一定能建立。
+- `(E[])` 轉型讓編譯器願意存進 `E[]` 欄位。編譯器無法保證這個轉型，所以會警告：
+
+  ```text
+  warning: [unchecked] unchecked cast
+          elements = (E[]) new Object[size];
+  ```
+
+- 它在執行時**仍然是 `Object[]`**。[`GenericStack.java`](../src/GenericStack.java) 在 class 裡印出 `elements.getClass()`，結果是 `Object[]`。
+
+**為什麼還是安全**：`elements` 是 `private`，外面只能透過 `push(E)`、`pop()` 存取。`push` 的參數型別是 E，錯誤型別會被編譯器擋下，所以陣列裡實際上只會放 E：
+
+```text
+error: incompatible types: String cannot be converted to Integer
+```
+
+**要注意**：不要把這個陣列直接交給外面。從外面把 `Stack<String>` 的 `elements` 當成 `String[]` 拿出來，會丟出 `ClassCastException`，因為它其實是 `Object[]`：
+
+```text
+ClassCastException: class [Ljava.lang.Object; cannot be cast to class [Ljava.lang.String;
+```
+
+> 實務上更常見的做法是改用 `ArrayList<E>`。它內部也是 `Object[]`，但轉型已經幫你處理好了。
+
+`GenericStack`（p.15 的修正完整版，加上 `push`、`pop`、`isEmpty`）的輸出：
+
+```text
+pop doubleStack:  2.2
+pop integerStack: 20
+runtime array type: Object[]
+ArrayStoreException: java.lang.Integer
+```
+
+p.15 另有一個 `final int size` 被 shadowing 的錯，見[第 8 節](#8-講義語法更正)。
+
+### 4. E 只存在於 compile time
+
+**凡是需要在 run time「知道 E 到底是什麼型別」的寫法，都不能用。**以下錯誤訊息都是實際編譯出來的：
+
+| 寫法 | 為什麼需要 run time 知道 E | 編譯錯誤 |
+|---|---|---|
+| `new E()` | 要知道建立哪個 class 的物件 | `unexpected type` |
+| `new E[3]` | 陣列要記住元素型別 | `generic array creation` |
+| `o instanceof E` | 執行時要檢查物件是不是 E | `Object cannot be safely cast to E` |
+| `E.class` | 要拿到 E 的 class 物件 | `cannot select from a type variable` |
+
+只需要編譯器檢查的寫法都可以用：
+
+| 寫法 | 例子 |
+|---|---|
+| 宣告變數、參數、回傳型別 | `E max;`、`void push(E e)`、`E pop()` |
+| 呼叫上限保證有的方法 | `<T extends Comparable<T>>` 之後呼叫 `compareTo()` |
+| 轉型（編譯器會警告 unchecked） | `(E[]) new Object[size]` |
+
+**容易誤會的地方：被擦掉的是「型別參數 E」，不是物件本身的型別。**物件在 run time 仍然知道自己是什麼 class。在 generic class 裡印出 `value.getClass()`，`new H<String>("hi")` 和 `new H<Integer>(5)` 分別印出：
+
+```text
+String Integer
+```
+
+所以 late binding 照樣運作，`toString()`、`compareTo()` 執行的都是物件自己的版本（[第 11 節第 2 小節](#2-static-binding-與-late-binding)）。只是外層的 `H` 物件不記得「我是 `H<String>`」。
+
+### 5. 可以直接講的英文
+
+**為什麼不能寫 `new E[size]`（短版，約 20 秒）**
+
+> We can't write `new E[size]` because of type erasure. At runtime, the JVM doesn't know what E is — it's been erased to Object. But an array has to know its element type when it's created, because arrays check every element you store at runtime. Since E isn't available at runtime, the compiler doesn't allow generic array creation. So instead, we create an Object array and cast it to `E[]`.
+
+**完整版（約 1 分鐘）**
+
+> The reason is type erasure.
+>
+> When the compiler translates a generic class into bytecode, it removes the type parameter and replaces E with Object. So at runtime, the JVM has no idea whether this is a `Stack<String>` or a `Stack<Integer>`.
+>
+> Arrays are different from generics. An array remembers its element type at runtime, and it checks every value you put into it. For example, if you have a String array and try to store an Integer, you get an `ArrayStoreException`.
+>
+> So to create an array, the JVM must know the exact element type. But E has already been erased, so that information doesn't exist. That's why the compiler gives the error "generic array creation."
+>
+> The workaround on the slide is to create an Object array and cast it to `E[]`. The compiler gives an unchecked warning, because it can't verify the cast. But it's still safe here, because the array is private, and we only add elements through methods like `push`, which only accept type E.
+
+**被追問時補充**
+
+> If we need something easier and safer, we can just use an `ArrayList<E>` instead of an array.
+
+**E 是不是只存在於 compile time**
+
+> Yes. E only exists at compile time. The compiler uses it to check types, and then erases it. So anything that needs to know what E is at runtime is not allowed — like `new E()`, `new E[size]`, `instanceof E`, or `E.class`. But we can still use E to declare variables, parameters, and return types, because those are only checked by the compiler. And the objects themselves still know their real type at runtime, so method calls like `toString()` or `compareTo()` still work through dynamic binding.
+
+**關鍵字**：type erasure → replaced with Object → arrays know their type at runtime → generic array creation error → `(E[]) new Object[size]` → unchecked warning → safe because the array is private.
+
+### 本節檢查清單
+
+- [ ] 說得出 generics 是「把型別當成參數」，`< >` 專門放型別，`( )` 放值
+- [ ] Generic method 的 `<E>` 寫在 return type 前；generic class 的 `<K, V>` 寫在 class 名稱後，整個 class 都能用
+- [ ] 知道 `new OrderPair<>(...)` 的空 `<>` 是 diamond operator
+- [ ] 說得出不能 `new E[size]` 的原因：陣列在 run time 要知道元素型別，而 E 已被擦掉
+- [ ] 會寫 `(E[]) new Object[size]`，知道為什麼有 unchecked 警告、為什麼陣列要保持 `private`
+- [ ] 說得出 `new E()`、`new E[]`、`instanceof E`、`E.class` 都不能用；物件本身仍知道自己的型別
+
 ---
 
-下次從 **p.14** generic class（`Stack<E>`）繼續，接著是 p.18–20 wildcards。
+下次從 **p.16** 繼續（`Stack<Double>`、`Stack<Integer>` 的使用，p.17 type parameter 的範圍），接著是 p.18–20 wildcards。
