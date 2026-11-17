@@ -5,9 +5,9 @@
 > 個人學習筆記，課堂內容以自己的話重新整理。本文不含投影片原文或圖片，標註的頁碼只用來對照課程講義；所有範例程式都是自己寫的，錯誤訊息與輸出都是實際用 `javac` / `java`（JDK 25）跑出來的。
 
 - 課程：CSYE6200（Fall 2026）
-- 單元：Generics（`10_Generics.pdf`，共 21 頁；本篇目前整理到 **p.8**，p.9 起待續）
-- 日期：2026-11-17（課堂進度到 p.8；另有課堂討論：C 語言編譯、static／late binding、編譯器與 JVM 的順序，見第 11 節）
-- 可執行的範例程式：[`../src/`](../src)（PrintArrayOverload、GenericPrint）
+- 單元：Generics（`10_Generics.pdf`，共 21 頁；p.1–8 逐頁整理在第 1–7 節，p.9–12 的 erasure、`Comparable`、upper bound 依課堂白板整理在第 11 節，p.13 起待續）
+- 日期：2026-11-17（課堂進度到 p.12；課堂討論與白板：C 語言編譯、static／late binding、編譯器與 JVM 的順序、找最大值練習、Comparable 與 upper bound，見第 11 節）
+- 可執行的範例程式：[`../src/`](../src)（PrintArrayOverload、GenericPrint、FindMax）
 - 先備：Week 5 Method Overloading、Wrapper Classes；Week 8 [ArrayList 的 Generics 補充](../../week-08/notes/arraylist-abstract-interfaces.zh-TW.md#補充generics泛型)
 
 ## 目錄
@@ -22,7 +22,7 @@
 8. [講義語法更正](#8-講義語法更正)
 9. [常見錯誤](#9-常見錯誤)
 10. [檢查清單](#10-檢查清單)
-11. [課堂討論：C 語言編譯、Binding、編譯器與 JVM](#11-課堂討論c-語言編譯binding編譯器與-jvm)
+11. [課堂討論與白板：C 語言編譯、Binding、找最大值、Upper bound](#11-課堂討論與白板c-語言編譯binding找最大值upper-bound)
 12. [課堂補充（待補）](#12-課堂補充待補)
 
 ---
@@ -307,6 +307,9 @@ error: cannot find symbol
 | 宣告 `<E>`，內文用 `T` | `cannot find symbol: class T` | 名稱一致 |
 | 非 static 的 generic method 從 `main` 直接呼叫 | `cannot be referenced from a static context` | 加 `static`，或先 `new` 物件再呼叫 |
 | 以為 generics 讓 `printArray` 能收 `int[]` | 不行，primitive 陣列仍要 overload | 用 wrapper 陣列 |
+| 用 `>` 比較兩個 T 或兩個 `String` | 編譯錯誤：`bad operand types for binary operator '>'` | 用 `compareTo()` |
+| 只寫 `<T>` 卻呼叫 `compareTo()` | `cannot find symbol: method compareTo(T)` | 加上 upper bound：`<T extends Comparable<T>>` |
+| 在 `< >` 裡寫 `<T implements Comparable<T>>` | 編譯錯誤 | 型別限制一律用 `extends` |
 
 ## 10. 檢查清單
 
@@ -318,11 +321,11 @@ error: cannot find symbol
 - [ ] 能說出 type parameter / type variable / actual type argument 的差別
 - [ ] 能說出 generics 的兩個好處：一份宣告代表一組方法或型別；編譯時抓到型別錯誤
 
-## 11. 課堂討論：C 語言編譯、Binding、編譯器與 JVM
+## 11. 課堂討論與白板：C 語言編譯、Binding、找最大值、Upper bound
 
-老師在講 generics 時，順帶講了 C 語言怎麼編譯，以及 static binding 和 late binding 的差別。兩個話題要說的是同一件事：**哪些事在 compile time 決定，哪些事在 run time 才決定**，generics 的設計就是依照這條線劃分的。
+老師在講 generics 時，順帶講了 C 語言怎麼編譯，以及 static binding 和 late binding 的差別；接著在白板上出了找最大值的練習，並用圖解釋 `Comparable` 是 upper bound（第 4–6 小節）。兩個話題要說的是同一件事：**哪些事在 compile time 決定，哪些事在 run time 才決定**，generics 的設計就是依照這條線劃分的。
 
-> 下面「為什麼講這個」的部分，是依講義（Generics p.9–13、講義 7 p.35–50）整理出來的解釋；老師實際的說法和例子，記在[第 12 節](#12-課堂補充待補)。
+> 第 1–3 小節「為什麼講這個」的部分，是依講義（Generics p.9–13、講義 7 p.35–50）整理出來的解釋；第 4–6 小節依白板內容整理。老師實際的說法和例子，記在[第 12 節](#12-課堂補充待補)。
 
 ### 1. 為什麼提 C 語言的編譯
 
@@ -388,6 +391,210 @@ Hello.java ──javac──► Hello.class ──java──► 執行結果
 
 **一句話：**② 編譯器負責檢查、erasure 和 static binding；④ JVM 負責執行和 late binding；③ bytecode 是兩者之間的交接檔。
 
+### 4. 白板練習：找最大值，從 int 寫到 Generic（p.10–11）
+
+白板上的題目：
+
+> Write a method that accepts an array of ints and return the maximum value.
+
+老師要求**先從 `int` 版本寫起**，再一步步改成 generic method。範例：[`FindMax.java`](../src/FindMax.java)
+
+**Step 1：只處理 `int`**
+
+```java
+public static int maximum(int[] array) {
+    int max = array[0];              // 先假設第一個最大
+    for (int element : array) {
+        if (element > max) {         // int 可以直接用 >
+            max = element;
+        }
+    }
+    return max;
+}
+```
+
+**Step 2：要處理 `double`，就得再寫一個 overload**
+
+```java
+public static double maximum(double[] array) {
+    double max = array[0];
+    for (double element : array) {
+        if (element > max) {
+            max = element;
+        }
+    }
+    return max;
+}
+```
+
+問題和 p.3 一樣：每多一種型別就要多寫一份，邏輯完全相同。而且講義 p.10 提醒：`>`、`<`、`>=` 這些 relational operators **不能用在 reference type**。例如 `String` 用 `>` 會編譯錯誤：
+
+```text
+error: bad operand types for binary operator '>'
+  first type:  String
+```
+
+**Step 3：改用 wrapper `Integer` 和 `compareTo()`**
+
+想把型別換成 T，T 只能是 reference type（[第 7 節規則三](#規則三只能代表-reference-type不能是-primitive)）。所以先把 `int` 換成 `Integer`，把 `>` 換成 `compareTo()`：
+
+```java
+public static Integer maximumInteger(Integer[] array) {
+    Integer max = array[0];
+    for (Integer element : array) {
+        if (element.compareTo(max) > 0) {   // 物件用 compareTo，不用 >
+            max = element;
+        }
+    }
+    return max;
+}
+```
+
+| `a.compareTo(b)` 的結果 | 意思 |
+|---|---|
+| `> 0` | a 比 b 大 |
+| `== 0` | 一樣大 |
+| `< 0` | a 比 b 小 |
+
+到這一步，寫法已經和型別無關，只剩 `Integer` 這個字寫死在裡面。
+
+**Step 4：把 `Integer` 換成 T，就是講義 p.11 的 generic method**
+
+```java
+public static <T extends Comparable<T>> T maximumGeneric(T[] array) {
+    T max = array[0];
+    for (T element : array) {
+        if (element.compareTo(max) > 0) {
+            max = element;
+        }
+    }
+    return max;
+}
+```
+
+`FindMax` 的輸出：
+
+```text
+Step 1 int[]:      9
+Step 2 double[]:   8.25
+Step 3 Integer[]:  9
+Step 4 Integer[]:  9
+Step 4 Double[]:   8.25
+Step 4 Character[]: v
+Step 4 String[]:   zebra
+```
+
+- 講義 p.11 的迴圈寫成 `for (int i = 1; i < x.length; i++)`，從第 2 個開始比，結果相同。
+- `Character` 和 `String` 的 `compareTo()` 依 Unicode 編碼比較。小寫字母的編碼比大寫大（`'a'` = 97，`'A'` = 65），所以 `'v'` 最大；字串逐字比較，`z` 開頭的 `"zebra"` 最大。
+- 陣列是空的話，`array[0]` 會丟出 `ArrayIndexOutOfBoundsException`，講義的範例沒有處理這個情況。
+
+| Step | 型別 | 比較方式 | 問題 |
+|---|---|---|---|
+| 1 | `int` | `>` | 只能用在 `int` |
+| 2 | `int`、`double` 各一個 overload | `>` | 重複程式碼；`String` 不能用 `>` |
+| 3 | `Integer` | `compareTo()` | 寫法已經通用，但型別寫死成 `Integer` |
+| 4 | `T extends Comparable<T>` | `compareTo()` | 一個方法處理所有能比大小的型別 |
+
+### 5. 白板：Comparable 是 Upper bound（p.10、p.12）
+
+**`Comparable<T>` 從哪裡來**
+
+它是 Java 內建的 **generic interface**，放在 `java.lang` package。`java.lang` 會自動 import，所以不用寫 `import`。核心只有一個方法：
+
+```java
+public interface Comparable<T> {
+    int compareTo(T o);   // 回傳 > 0、0、< 0
+}
+```
+
+講義 p.10 說，所有 wrapper class 都實作了這個 interface。JDK 裡的宣告是 `Integer implements Comparable<Integer>`、`String implements Comparable<String>`，`Double`、`Character` 也一樣。所以它們都能呼叫 `compareTo()`。
+
+**白板的圖**
+
+`Comparable` 畫在最上面，`Class1`、`Class2` 有箭頭往上指向它（有實作它），`Class3` 沒有箭頭：
+
+```text
+            Comparable          ← upper bound（上限）
+             ↑       ↑
+         Class1    Class2       Class3（沒有箭頭）
+        例如 Integer  例如 String    例如 Animal
+           ✅ 可以當 T   ✅ 可以當 T    ❌ 編譯錯誤
+```
+
+**Upper bound 的意思**
+
+Bound 是對 T 的限制，規定 T 可以是哪些型別；upper bound 就是給 T 設一個「上限」。`<T extends Comparable<T>>` 的意思是：T 只能是 `Comparable`，或是在它**下面**的型別，也就是有實作它的 class。在圖裡，`Comparable` 位在最上面，T 能選的型別都在它下面，所以叫 upper bound（p.12）。
+
+| 白板上的 class | 有沒有實作 `Comparable` | 能不能傳進 `maximumGeneric()` |
+|---|---|---|
+| Class1（例如 `Integer`） | 有 | ✅ |
+| Class2（例如 `String`） | 有 | ✅ |
+| Class3（例如講義 p.12 的 `Animal`） | **沒有** | ❌ 編譯時就被擋下來 |
+
+`<T extends Comparable<T>>` 逐段讀：
+
+| 片段 | 意思 |
+|---|---|
+| `<T ...>` | 宣告型別參數 T |
+| `extends Comparable<T>` | T 必須實作 `Comparable<T>`，也就是能和**自己同型別**比大小 |
+
+- 第一個 T 是宣告，`Comparable<T>` 裡的 T 是使用，兩者指同一個型別。代入 `Integer` 就是 `Integer extends Comparable<Integer>`，成立。
+- 在 `< >` 的限制裡，不管上限是 class 還是 interface，一律寫 `extends`，不寫 `implements`。這和 Week 8 不同：class 實作 interface 時才寫 `implements`。
+
+**為什麼一定要設上限**
+
+只寫 `<T>` 的話，編譯器只知道 T 是某種 `Object`，而 `Object` 沒有 `compareTo()`：
+
+```text
+error: cannot find symbol
+  static <T> T maximum(T[] a){ T m=a[0]; for(T e:a) if(e.compareTo(m)>0) m=e; return m; }
+                                                        ^
+  symbol:   method compareTo(T)
+  location: variable e of type T
+```
+
+有了上限，編譯器就確定 T 一定有 `compareTo()`。同時，不能比大小的型別也會在編譯時被擋下來。例如傳一個沒有實作 `Comparable` 的 `Animal[]`：
+
+```text
+error: method maximum in class AnimalMax cannot be applied to given types;
+  public static void main(String[] x){ maximum(new Animal[]{new Animal()}); }
+                                       ^
+  required: T[]
+  found:    Animal[]
+  reason: inference variable T has incompatible bounds
+    upper bounds: Comparable<T>
+    lower bounds: Animal
+```
+
+錯誤訊息裡直接寫了 `upper bounds: Comparable<T>`。
+
+**和 erasure 的關係（p.9）**
+
+p.9 說 erasure 預設把型別參數換成 `Object`。有 upper bound 時，換成的是**上限的型別**。用 reflection 查編譯後 bytecode 裡的方法簽名：
+
+```text
+FindMax.maximumGeneric: Comparable[] -> Comparable
+GenericPrint.printArray: Object[]
+```
+
+- `printArray` 的 `<E>` 沒有上限，所以變成 `Object[]`。
+- `maximumGeneric` 的 `<T extends Comparable<T>>` 有上限，所以變成 `Comparable[]`。也因為這樣，擦除之後仍然能呼叫 `compareTo()`，執行時再由 late binding 跑 `Integer` 或 `String` 自己的版本（[本節第 2 小節](#2-static-binding-與-late-binding)）。
+
+> 預告：講義 p.18–20 的 wildcards 會出現相反的 **lower bound**（`? super T`），代表「最低只能到 T」。
+
+**一句話：Upper bound 就是「T 最高只能到 `Comparable`」，T 必須是實作了 `Comparable` 的 class，所以方法裡一定能用 `compareTo()`。**
+
+### 6. 白板：`Person.main();` 與 `p.getAge();`
+
+白板左上角複習了兩種呼叫方式：
+
+| 寫法 | 方法種類 | 怎麼呼叫 |
+|---|---|---|
+| `Person.main();` | **static** 方法 | 用 **class 名稱**呼叫，不用建立物件 |
+| `p.getAge();` | **instance** 方法 | 要先 `new` 出物件 `p`，再用物件呼叫 |
+
+這和[第 8 節](#8-講義語法更正)講義 p.5 的錯誤有關：`printArray` 沒有寫 `static`，所以不能從 static 的 `main` 直接呼叫。要嘛加上 `static`，要嘛先建立物件再用物件呼叫。這裡寫的 generic method 都加了 `static`，所以 `main` 可以直接呼叫。
+
 ### 本節檢查清單
 
 - [ ] 說得出 C 和 Java 編譯結果的差別（機器碼 vs bytecode）
@@ -395,6 +602,11 @@ Hello.java ──javac──► Hello.class ──java──► 執行結果
 - [ ] Overloading → static binding（compile time）；overriding → late binding（run time）
 - [ ] 說得出 generic method 能印出不同型別，是因為 late binding 呼叫各自的 `toString()`
 - [ ] 能依序講出 原始碼 → 編譯器 → bytecode → JVM，以及每一步抓到哪一種錯
+- [ ] 能從 `int[]` 版的找最大值，一步步改寫成 `<T extends Comparable<T>>` 版
+- [ ] 說得出為什麼物件不能用 `>`，要用 `compareTo()`；`compareTo()` 回傳 `> 0`、`0`、`< 0` 的意思
+- [ ] 說得出 upper bound 的意思：T 只能是 `Comparable` 或在它下面（有實作它）的型別
+- [ ] 說得出有 upper bound 時，erasure 把 T 換成 `Comparable`，不是 `Object`
+- [ ] 分得清 `ClassName.method()`（static）和 `obj.method()`（instance）
 
 ## 12. 課堂補充（待補）
 
@@ -404,4 +616,4 @@ Hello.java ──javac──► Hello.class ──java──► 執行結果
 
 ---
 
-下次從 **p.9 Erasure** 繼續，接著是 p.10–13 `Comparable` 與 bounded type parameter（`<T extends Comparable<T>>`）、p.14–17 generic class（`Stack<E>`）、p.18–20 wildcards。
+下次從 **p.13**（generic method 的 overloading）繼續，接著是 p.14–17 generic class（`Stack<E>`）、p.18–20 wildcards。
