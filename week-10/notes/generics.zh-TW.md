@@ -4,7 +4,7 @@
 
 - 課程：CSYE6200（Fall 2026）
 - 單元：Generics（`10_Generics.pdf`，共 21 頁；本篇目前整理到 **p.8**，p.9 起待續）
-- 日期：2026-11-17（課堂進度到 p.8）
+- 日期：2026-11-17（課堂進度到 p.8；另有課堂討論：C 語言編譯、static／late binding、編譯器與 JVM 的順序，見第 11 節）
 - 可執行的範例程式：[`../src/`](../src)（PrintArrayOverload、GenericPrint）
 - 先備：Week 5 Method Overloading、Wrapper Classes；Week 8 [ArrayList 的 Generics 補充](../../week-08/notes/arraylist-abstract-interfaces.zh-TW.md#補充generics泛型)
 
@@ -20,7 +20,8 @@
 8. [講義語法更正](#8-講義語法更正)
 9. [常見錯誤](#9-常見錯誤)
 10. [檢查清單](#10-檢查清單)
-11. [課堂補充（待補）](#11-課堂補充待補)
+11. [課堂討論：C 語言編譯、Binding、編譯器與 JVM](#11-課堂討論c-語言編譯binding編譯器與-jvm)
+12. [課堂補充（待補）](#12-課堂補充待補)
 
 ---
 
@@ -315,7 +316,85 @@ error: cannot find symbol
 - [ ] 能說出 type parameter / type variable / actual type argument 的差別
 - [ ] 能說出 generics 的兩個好處：一份宣告代表一組方法或型別；編譯時抓到型別錯誤
 
-## 11. 課堂補充（待補）
+## 11. 課堂討論：C 語言編譯、Binding、編譯器與 JVM
+
+老師在講 generics 時，順帶講了 C 語言怎麼編譯，以及 static binding 和 late binding 的差別。兩個話題要說的是同一件事：**哪些事在 compile time 決定，哪些事在 run time 才決定**，generics 的設計就是依照這條線劃分的。
+
+> 下面「為什麼講這個」的部分，是依講義（Generics p.9–13、講義 7 p.35–50）整理出來的解釋；老師實際的說法和例子，記在[第 12 節](#12-課堂補充待補)。
+
+### 1. 為什麼提 C 語言的編譯
+
+用來對照 p.9 的 **erasure**。
+
+| | C | Java |
+|---|---|---|
+| 編譯結果 | 直接編成特定 CPU／OS 的機器碼 | 編成 bytecode，交給 JVM 執行 |
+| 能不能 overload | **不能**。函式名稱不能重複，只能寫 `printIntArray`、`printDoubleArray`…… | 可以（p.3） |
+| 想寫「通用」的函式 | 用 `void*`（萬用指標，沒有型別檢查），或用 macro 替每個型別複製一份程式 | 用 generics |
+
+所以 p.2–3 的問題在 C 裡更嚴重，C 連 overloading 都沒有。
+
+Java 的做法（p.9）：編譯器先用 `<E>` **檢查型別**，再把 `E` **擦掉、換成 `Object`**。bytecode 裡只有一個 `printArray(Object[])`，不會替 Integer、Double 各生一份。由此可知：
+
+- **型別安全只在 compile time 有效**：執行時 JVM 已經不知道 E 是什麼。
+- **E 不能是 `int`**：擦掉後變成 `Object`，而 `Object` 只能指向物件、裝不了 primitive（[第 7 節規則三](#規則三只能代表-reference-type不能是-primitive)）。
+
+> 補充：C++ 的 template 做法和 Java 相反，會替每個型別各產生一份程式碼。
+
+### 2. Static binding 與 Late binding
+
+Binding 的意思是：程式裡寫了 `obj.doIt()`，**決定實際執行哪一個方法本體**。差別在於什麼時候決定。
+
+| | Static binding（early binding） | Late binding（dynamic binding） |
+|---|---|---|
+| 何時決定 | Compile time | Run time |
+| 誰決定 | 編譯器，看**宣告的型別**和引數型別 | JVM，看**物件實際的型別** |
+| 代表情況 | **Overloading**；`static`、`private`、`final` 方法 | **Overriding** |
+| 講義 | Generics p.3、p.13（generic method 也能 overload，編譯器挑最精確的那個） | 講義 7 p.35、p.40 |
+
+和 generics 的關係：
+
+1. **p.3 的 overload 是 static binding**：`printArray(ints)` 呼叫 `int[]` 版，是編譯器在 compile time 就選好的。
+2. **Generic method 能印出正確結果，靠的是 late binding**：擦除之後，`printArray` 裡的 `element` 在編譯器眼中只是 `Object`。
+
+   ```java
+   System.out.printf("%s ", element);   // 內部會呼叫 element.toString()
+   ```
+
+   編譯器只知道「呼叫 `Object` 的 `toString()`」。真正執行時，JVM 看物件實際的型別，跑 `Integer`、`Character`、`String` 各自改寫過的 `toString()`，所以印出 `1 2 3`、`H E L L O`，而不是記憶體位址。
+3. p.10–11 的 `compareTo` 也一樣：`T extends Comparable<T>` 讓編譯器確定 T 一定有 `compareTo()`；執行時再由 late binding 呼叫 `Integer` 或 `String` 自己的版本。
+
+> 考試提醒：講義 7 p.50 把 overloading 和 overriding 都歸為 polymorphism。前者常被稱為 compile-time polymorphism，後者稱為 run-time polymorphism。
+
+### 3. 編譯器與 JVM 的執行順序
+
+先編譯器，後 JVM，兩個是分開的步驟。
+
+```text
+Hello.java ──javac──► Hello.class ──java──► 執行結果
+  原始碼      編譯器      bytecode     JVM（run time）
+```
+
+| 步驟 | 檔案／指令 | 誰做 | 做什麼 | Binding | 這時抓到的錯 |
+|---|---|---|---|---|---|
+| ① 原始碼 | `Hello.java` | 自己 | 寫 class、method、`<E>`，以及像 `obj.doIt()` 這樣的呼叫 | **還沒決定**：只寫了呼叫，還沒決定執行哪個方法本體 | 還沒檢查（Eclipse 的紅線其實是它在背景跑編譯器，屬於 ②） |
+| ② 編譯器 | `javac Hello.java` | 編譯器 | 檢查語法和型別；generics 先檢查 `<E>`，再 **erasure** 成 `Object`；產生 `.class` | **Static binding 在這裡完成**：overloading 選哪一版、`static`／`private`／`final` 方法，由編譯器看宣告的型別決定 | **Compile-time error**：語法錯、型別不符、generics 型別錯、`int` 當 E |
+| ③ Bytecode | `Hello.class` | （產物） | 和平台無關的位元組碼，任何有 JVM 的平台都能跑；E 已經變成 `Object` | Static binding 的結果**已經寫死**在 bytecode 裡；overriding 的呼叫只記下「呼叫 `Object.toString()`」，**留給 JVM 決定** | 無（這只是檔案）。改了 `.java` 卻沒重新 `javac`，執行的還是舊的 `.class`（Week 5 的 John 例子） |
+| ④ Run time | `java Hello` | JVM | 載入 `.class`，把 bytecode 轉成機器碼執行 | **Late binding 在這裡發生**：overriding 依物件實際的型別執行，例如 `element.toString()` 跑的是 `Integer` 或 `Character` 自己的版本 | **Runtime error**：`ArithmeticException`、`ClassCastException`、陣列越界 |
+
+和 C 的差別：C 編譯後直接產生機器碼，只有一步，而且換平台要重新編譯；Java 的 `.class` 換到任何有 JVM 的平台都能跑（write once, run anywhere）。
+
+**一句話：**② 編譯器負責檢查、erasure 和 static binding；④ JVM 負責執行和 late binding；③ bytecode 是兩者之間的交接檔。
+
+### 本節檢查清單
+
+- [ ] 說得出 C 和 Java 編譯結果的差別（機器碼 vs bytecode）
+- [ ] 說得出 erasure 在哪一步發生、為什麼 E 不能是 primitive
+- [ ] Overloading → static binding（compile time）；overriding → late binding（run time）
+- [ ] 說得出 generic method 能印出不同型別，是因為 late binding 呼叫各自的 `toString()`
+- [ ] 能依序講出 原始碼 → 編譯器 → bytecode → JVM，以及每一步抓到哪一種錯
+
+## 12. 課堂補充（待補）
 
 > 老師上課額外講的例子、問答、白板內容記在這裡：
 

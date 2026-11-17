@@ -6,6 +6,8 @@
 
 對應 `10_Generics.pdf` p.1–8（2026-11-17 課堂進度）：用 overloading 印不同型別陣列的問題、generic method `<E>` 的寫法與呼叫、type inference、generics 的兩個好處（一份宣告代表一組方法／型別、compile-time type safety）、type parameter / type variable / actual type argument、只能用 reference type。p.9–20（erasure、`Comparable` 與 bounded type、generic class、wildcards）尚未整理。
 
+課堂討論（第 11 節）：C 語言的編譯和 Java 的對照（機器碼 vs bytecode、erasure）、static binding 與 late binding 比較表、編譯器與 JVM 的執行順序（原始碼 → 編譯器 → bytecode → run time，含各步驟的 binding 與錯誤種類）。
+
 ## 程式
 
 | 檔案 | 內容 |
