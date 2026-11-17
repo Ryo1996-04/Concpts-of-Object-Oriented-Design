@@ -12,7 +12,7 @@ Java 課堂程式與學習筆記，依週次整理。筆記以英文技術名詞
 | [Week 6](week-06/README.md) | Inheritance, super, protected, Overriding | [src](week-06/src) | [Inheritance / super / Overriding](week-06/notes/inheritance-and-super.zh-TW.md) ([English](week-06/notes/inheritance-and-super.en.md)) |
 | [Week 8](week-08/README.md) | ArrayList, Abstract Classes, Interfaces | [src](week-08/src) | [ArrayList / Abstract / Interface](week-08/notes/arraylist-abstract-interfaces.zh-TW.md) ([English](week-08/notes/arraylist-abstract-interfaces.en.md)) |
 | [Week 9](week-09/README.md) | Enum Types；main、args 與 Scanner；Exception Handling | [src](week-09/src) | [Enum](week-09/notes/enum.zh-TW.md) ([English](week-09/notes/enum.en.md)) · [main / Scanner](week-09/notes/main-and-scanner.zh-TW.md) ([English](week-09/notes/main-and-scanner.en.md)) · [Exception Handling](week-09/notes/exception-handling.zh-TW.md) ([English](week-09/notes/exception-handling.en.md)) |
-| [Week 10](week-10/README.md) | Generics | [src](week-10/src) | [Generics（p.1–12）](week-10/notes/generics.zh-TW.md) ([English](week-10/notes/generics.en.md)) |
+| [Week 10](week-10/README.md) | Generics | [src](week-10/src) | [Generics（p.1–13）](week-10/notes/generics.zh-TW.md) ([English](week-10/notes/generics.en.md)) |
 
 ## 講義與筆記對照
 
@@ -29,7 +29,7 @@ Java 課堂程式與學習筆記，依週次整理。筆記以英文技術名詞
 | `7_Inheritance and Polymorphism.pdf`（51 頁） | Week 6 | p.3–28 | p.29–50（Object class、final、binding、polymorphism、casting、instanceof） |
 | `8_Abstract classes And Interfaces.pdf`（32 頁） | Week 8、Week 9 | p.1–31 | — |
 | `9_Exception Handling in Java.pdf`（41 頁） | Week 9 | p.3–30 | p.31–40（Unit Testing、JUnit） |
-| `10_Generics.pdf`（21 頁） | Week 10 | p.1–12（p.9–12 依課堂白板整理） | p.13–20 |
+| `10_Generics.pdf`（21 頁） | Week 10 | p.1–13（p.9–13 依課堂白板與範例整理） | p.14–20 |
 
 ## Directory structure
 

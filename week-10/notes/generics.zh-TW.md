@@ -5,9 +5,9 @@
 > 個人學習筆記，課堂內容以自己的話重新整理。本文不含投影片原文或圖片，標註的頁碼只用來對照課程講義；所有範例程式都是自己寫的，錯誤訊息與輸出都是實際用 `javac` / `java`（JDK 25）跑出來的。
 
 - 課程：CSYE6200（Fall 2026）
-- 單元：Generics（`10_Generics.pdf`，共 21 頁；p.1–8 逐頁整理在第 1–7 節，p.9–12 的 erasure、`Comparable`、upper bound 依課堂白板整理在第 11 節，p.13 起待續）
-- 日期：2026-11-17（課堂進度到 p.12；課堂討論與白板：C 語言編譯、static／late binding、編譯器與 JVM 的順序、找最大值練習、Comparable 與 upper bound，見第 11 節）
-- 可執行的範例程式：[`../src/`](../src)（PrintArrayOverload、GenericPrint、FindMax）
+- 單元：Generics（`10_Generics.pdf`，共 21 頁；p.1–8 逐頁整理在第 1–7 節，p.9–12 的 erasure、`Comparable`、upper bound 依課堂白板整理在第 11 節，p.13 overloading 依課堂範例整理在第 12 節，p.14 起待續）
+- 日期：2026-11-17（課堂進度到 p.13；課堂討論與白板：C 語言編譯、static／late binding、編譯器與 JVM 的順序、找最大值練習、Comparable 與 upper bound，見第 11 節；課堂範例 Max.java 見第 12 節）
+- 可執行的範例程式：[`../src/`](../src)（PrintArrayOverload、GenericPrint、FindMax、Max）
 - 先備：Week 5 Method Overloading、Wrapper Classes；Week 8 [ArrayList 的 Generics 補充](../../week-08/notes/arraylist-abstract-interfaces.zh-TW.md#補充generics泛型)
 
 ## 目錄
@@ -23,7 +23,7 @@
 9. [常見錯誤](#9-常見錯誤)
 10. [檢查清單](#10-檢查清單)
 11. [課堂討論與白板：C 語言編譯、Binding、找最大值、Upper bound](#11-課堂討論與白板c-語言編譯binding找最大值upper-bound)
-12. [課堂補充（待補）](#12-課堂補充待補)
+12. [課堂範例：Max.java（同名的一般方法與 generic method，p.13）](#12-課堂範例maxjava同名的一般方法與-generic-methodp13)
 
 ---
 
@@ -325,7 +325,7 @@ error: cannot find symbol
 
 老師在講 generics 時，順帶講了 C 語言怎麼編譯，以及 static binding 和 late binding 的差別；接著在白板上出了找最大值的練習，並用圖解釋 `Comparable` 是 upper bound（第 4–6 小節）。兩個話題要說的是同一件事：**哪些事在 compile time 決定，哪些事在 run time 才決定**，generics 的設計就是依照這條線劃分的。
 
-> 第 1–3 小節「為什麼講這個」的部分，是依講義（Generics p.9–13、講義 7 p.35–50）整理出來的解釋；第 4–6 小節依白板內容整理。老師實際的說法和例子，記在[第 12 節](#12-課堂補充待補)。
+> 第 1–3 小節「為什麼講這個」的部分，是依講義（Generics p.9–13、講義 7 p.35–50）整理出來的解釋；第 4–6 小節依白板內容整理。老師的課堂範例程式在[第 12 節](#12-課堂範例maxjava同名的一般方法與-generic-methodp13)。
 
 ### 1. 為什麼提 C 語言的編譯
 
@@ -608,12 +608,129 @@ GenericPrint.printArray: Object[]
 - [ ] 說得出有 upper bound 時，erasure 把 T 換成 `Comparable`，不是 `Object`
 - [ ] 分得清 `ClassName.method()`（static）和 `obj.method()`（instance）
 
-## 12. 課堂補充（待補）
+## 12. 課堂範例：Max.java（同名的一般方法與 generic method，p.13）
 
-> 老師上課額外講的例子、問答、白板內容記在這裡：
+老師在 Eclipse 示範的 `Max.java`，把白板練習的 `int` 版和 generic 版放在**同一個 class、用同一個名字** `findMax`。下面的程式依上課照片轉錄；第 1 行的 `public class Max {` 和最後的 `}` 不在畫面中，是我補上的。
 
--
+```java
+public class Max {
+    public static int findMax(int [] data)
+    {
+        int max = data[0];
+
+        for (int i = 1; i< data.length;i++)
+        {
+            if (data[i] > max)
+            {
+                max = data[i];
+            }
+        }
+        return max;
+    }
+    public static <T extends Comparable<T>> T findMax(T[] data)
+    {
+        T max = data[0];
+        for (int i = 1; i< data.length;i++)
+        {
+            if(max.compareTo(data[i])<0)
+            {
+                max = data[i];
+            }
+        }
+        return max;
+    }
+    public static void main(String args[])
+    {
+        int[] arr1 = {-8,25,69,8,-56,25,4};
+        String arr2[] = {"John", "Adams", "Barak", "Obama"};
+        double arr3[] = {25.5 ,89.9,0.25,69.88,-4.25};
+        System.out.println(findMax(arr1));
+        System.out.println(findMax(arr2));
+        System.out.println(findMax(arr3));
+    }
+}
+```
+
+### 1. 第一個 `findMax`：白板題目的 `int` 版
+
+- `int max = data[0];` 先假設第一個最大，所以迴圈從 `i = 1` 開始，不必和自己比。
+- 老師反白的那一行是 `if (data[i] > max)`。`int` 是 primitive，可以直接用 `>`。
+
+### 2. 第二個 `findMax`：generic 版
+
+- `<T extends Comparable<T>>`：T 的 upper bound 是 `Comparable`（[第 11 節第 5 小節](#5-白板comparable-是-upper-boundp10p12)），所以一定能呼叫 `compareTo()`。
+- 老師的判斷式寫成 `max.compareTo(data[i]) < 0`，意思是「max 比 data[i] **小**」，那就換成 data[i]。和 [`FindMax.java`](../src/FindMax.java) 的寫法方向相反，但意思一樣：
+
+| 寫法 | 讀法 | 何時更新 max |
+|---|---|---|
+| `max.compareTo(data[i]) < 0`（老師） | max < data[i] | data[i] 比較大 |
+| `element.compareTo(max) > 0`（FindMax） | element > max | element 比較大 |
+
+### 3. 兩個方法同名：overloading（p.13）
+
+講義 p.13：generic method 可以被 overload，也可以和**同名、參數數量相同**的一般方法共存。呼叫時，編譯器找**最精確符合引數型別**的那一個。這是 compile time 決定的 static binding（[第 11 節第 2 小節](#2-static-binding-與-late-binding)）。
+
+| 呼叫 | 引數型別 | `findMax(int[])` | `findMax(T[])` | 結果 |
+|---|---|---|---|---|
+| `findMax(arr1)` | `int[]` | ✅ 完全符合 | ❌ T 不能是 `int` | 呼叫 `int` 版 |
+| `findMax(arr2)` | `String[]` | ❌ | ✅ T = `String` | 呼叫 generic 版 |
+| `findMax(arr3)` | `double[]` | ❌ | ❌ T 不能是 `double` | **編譯錯誤** |
+
+### 4. 為什麼 `findMax(arr3)` 有紅色底線
+
+照片裡第 35 行的 `findMax(arr3)` 底下有紅色波浪線，表示編譯錯誤。`arr3` 是 `double[]`：
+
+- 不是 `int[]`，所以 `int` 版不能用。
+- `double` 是 primitive，不能當 T（[第 7 節規則三](#規則三只能代表-reference-type不能是-primitive)），所以 generic 版也不能用。
+
+實際編譯的錯誤訊息，兩個候選方法為什麼不適用都列出來了：
+
+```text
+Max.java:34: error: no suitable method found for findMax(double[])
+        System.out.println(findMax(arr3));
+                           ^
+    method Max.findMax(int[]) is not applicable
+      (argument mismatch; double[] cannot be converted to int[])
+    method Max.<T>findMax(T[]) is not applicable
+      (inference variable T has incompatible bounds
+        equality constraints: double
+        upper bounds: Comparable<T>)
+```
+
+> 行號是 34 而不是照片的 35，因為照片裡第一個 `findMax` 在第 3 行，比我的轉錄多一行（可能是空行或 `package`）。
+
+只要有一個編譯錯誤，整個檔案都不會產生 `.class`，所以連 `arr1`、`arr2` 那兩行也不會執行。
+
+**兩種修法：**
+
+1. 把陣列改成 wrapper：`Double arr3[] = {...};`，T 就是 `Double`，會呼叫 generic 版。
+2. 再寫一個 `findMax(double[] data)` overload，就像[第 11 節第 4 小節](#4-白板練習找最大值從-int-寫到-genericp1011)的 Step 2。
+
+用第 1 種改法後，[`Max.java`](../src/Max.java) 的輸出：
+
+```text
+69
+Obama
+89.9
+```
+
+### 5. 為什麼字串的最大值是 `"Obama"`
+
+`String` 實作了 `Comparable<String>`，它的 `compareTo()` 從第一個字元開始依 Unicode 編碼比較。四個字串的第一個字母是 `J`（74）、`A`（65）、`B`（66）、`O`（79），`O` 最大，所以結果是 `"Obama"`。這是字典順序，不是字串長度。
+
+### 6. 其他小地方
+
+- `String arr2[]`、`double arr3[]`、`String args[]` 是 C 風格的陣列宣告，和 `String[] arr2` 一樣（[第 8 節](#8-講義語法更正)）。
+- 兩個方法都有 `static`，所以 static 的 `main` 可以直接呼叫（[第 11 節第 6 小節](#6-白板personmain-與-pgetage)）。
+
+### 本節檢查清單
+
+- [ ] 同名的一般方法和 generic method 可以共存（p.13）；編譯器挑最精確符合的那一個
+- [ ] `int[]` → `int` 版；`String[]` → generic 版；`double[]` → 兩個都不適用，編譯錯誤
+- [ ] 會用 `Double[]` 或再加一個 `double[]` overload 修正
+- [ ] 看得懂 `max.compareTo(data[i]) < 0` 就是「max 比 data[i] 小」
+- [ ] 說得出 `"Obama"` 最大的原因：依字元的 Unicode 編碼比較，不是比長度
 
 ---
 
-下次從 **p.13**（generic method 的 overloading）繼續，接著是 p.14–17 generic class（`Stack<E>`）、p.18–20 wildcards。
+下次從 **p.14** generic class（`Stack<E>`）繼續，接著是 p.18–20 wildcards。
