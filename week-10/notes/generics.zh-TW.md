@@ -706,7 +706,7 @@ Max.java:34: error: no suitable method found for findMax(double[])
 1. 把陣列改成 wrapper：`Double arr3[] = {...};`，T 就是 `Double`，會呼叫 generic 版。
 2. 再寫一個 `findMax(double[] data)` overload，就像[第 11 節第 4 小節](#4-白板練習找最大值從-int-寫到-genericp1011)的 Step 2。
 
-用第 1 種改法後，[`Max.java`](../src/Max.java) 的輸出：
+老師在課堂上用的就是第 1 種：之後的照片裡 `arr3` 已改成 `Double arr3[]`，Console 也印出 `89.9`。改完後前三行的輸出：
 
 ```text
 69
@@ -723,6 +723,148 @@ Obama
 - `String arr2[]`、`double arr3[]`、`String args[]` 是 C 風格的陣列宣告，和 `String[] arr2` 一樣（[第 8 節](#8-講義語法更正)）。
 - 兩個方法都有 `static`，所以 static 的 `main` 可以直接呼叫（[第 11 節第 6 小節](#6-白板personmain-與-pgetage)）。
 
+### 7. 延伸：自己寫的 Circle 也能用同一個 findMax
+
+老師接著打開 `Circle.java`，讓它實作 `Comparable`，再把 `Circle[]` 傳給同一個 `findMax`。以下依上課照片轉錄（`Shape` 的內容不在畫面中；`toString()` 是後來加上的）：
+
+```java
+public class Circle extends Shape implements Comparable{
+    public Circle(float radius) {
+        super();
+        this.radius = radius;
+    }
+
+    public static final float PI = 3.14f;
+    private float radius;
+
+    public int compareTo(Object obj)
+    {
+        if(this.radius > ((Circle)obj).radius)
+            return 1;
+        else if(this.radius < ((Circle)obj).radius)
+            return -1;
+        else
+            return 0;
+    }
+    public float getRadius()
+    {
+        return radius;
+    }
+    // 之後加上的 toString()（見第 7.5 點）
+}
+```
+
+`Max.java` 的 `main` 多了一行：
+
+```java
+Circle[] arr4 = {new Circle(10), new Circle(59), new Circle(88), new Circle(150)};
+System.out.println(findMax(arr4).getRadius());
+```
+
+Console 輸出（和照片相同）：
+
+```text
+69
+Obama
+89.9
+150.0
+```
+
+**7.1 為什麼 Circle 能傳進 findMax：type independence**
+
+`findMax` 一行都沒改。它只會呼叫 `compareTo()`，至於「怎麼比大小」，由每個 class 自己決定：
+
+| 型別 | 誰定義怎麼比 |
+|---|---|
+| `Integer`、`Double` | JDK 寫好的：比數值 |
+| `String` | JDK 寫好的：比字典順序 |
+| `Circle` | 老師自己寫的：比 `radius` |
+
+這就是講義 p.14 說的 **type-independent**：同一段程式不依賴特定型別。也對應[第 11 節第 5 小節](#5-白板comparable-是-upper-boundp10p12)白板上那張圖：`Circle` 就是箭頭指向 `Comparable` 的 class 之一。
+
+**7.2 Circle 的 `compareTo()`**
+
+- 回傳 `1`、`-1`、`0`，分別代表「我比較大」、「我比較小」、「一樣大」，就是 `> 0`、`< 0`、`== 0` 三種情況。
+- 參數型別是 `Object`，所以要先轉型成 `(Circle)obj` 才能讀到 `radius`。
+- `class Circle extends Shape implements Comparable`：同時繼承一個 class、實作一個 interface（Week 8 p.21）。
+
+**7.3 `new Circle(10)` 為什麼可以**
+
+Constructor 的參數是 `float`，傳入 `int` 的 `10` 會自動 widening 成 `10.0f`，所以印出來是 `150.0`，不是 `150`。
+
+**7.4 為什麼要加 `.getRadius()`**
+
+`println(物件)` 會呼叫那個物件的 `toString()`。
+
+- `String`、`Double` 都改寫了 `toString()`，所以直接印得出內容。
+- `Circle` 沒有改寫，用的是 `Object` 預設的版本：**class 名稱 + `@` + hashCode 的 16 進位**。
+
+實際執行 `System.out.println(findMax(arr4));`（沒有 `toString()`）：
+
+```text
+Circle@7ad041f3
+```
+
+`7ad041f3` 是 `hashCode()` 的 16 進位（同一個物件的 `Integer.toHexString(c.hashCode())` 也印出 `7ad041f3`），不是記憶體位址，每次執行都可能不同。加上 `.getRadius()` 拿到的是 `float`，所以印出 `150.0`。
+
+**7.5 改寫 `toString()`，就能直接印 Circle**
+
+```java
+@Override
+public String toString() {
+    return "" + this.getRadius();
+}
+```
+
+加上之後，`System.out.println(findMax(arr4));` 也會印出 `150.0`。
+
+- 方法標頭一定要是 `public String toString()`，回傳型別必須是 `String`。
+- 老師寫 `"" + this.getRadius()`，是用字串串接把 `float` 變成 `String`。也可以寫 `String.valueOf(radius)`，或寫成更清楚的 `"Circle with radius " + radius`。
+- 字串串接（`"max: " + c`）和 `String.valueOf(c)` 也會自動呼叫 `toString()`。
+- 建議加 `@Override`：拼錯名字時（例如 `tostring()`），編譯器會直接報錯：
+
+  ```text
+  error: method does not override or implement a method from a supertype
+  ```
+
+- `println` 呼叫的是 `Object` 的 `toString()`，實際執行哪一版，由物件型別決定。這是 late binding（[第 11 節第 2 小節](#2-static-binding-與-late-binding)）。
+
+**7.6 老師用的是 raw type `Comparable`**
+
+`implements Comparable` 後面沒有寫 `<Circle>`，這叫 **raw type**，是 generics 出現之前的寫法。能編譯，但用 `-Xlint:all` 編譯會出現警告：
+
+```text
+Circle.java:1: warning: [rawtypes] found raw type: Comparable
+Max.java:20: warning: [unchecked] unchecked method invocation: method findMax in class Max is applied to given types
+```
+
+照片裡第 37 行 `findMax(arr4)` 底下的黃色底線，就是 Eclipse 顯示的這個 unchecked 警告。
+
+Raw type 的問題是型別錯了要到**執行時**才發現。例如 `c.compareTo("hello")` 能編譯，執行才出錯：
+
+```text
+Exception in thread "main" java.lang.ClassCastException: class java.lang.String cannot be cast to class Circle
+	at Circle.compareTo(Circle.java:6)
+```
+
+改成 generic 寫法就不用轉型，錯誤也會提前到**編譯時**：
+
+```java
+public class Circle extends Shape implements Comparable<Circle> {
+    public int compareTo(Circle other) {
+        if (this.radius > other.radius) return 1;
+        else if (this.radius < other.radius) return -1;
+        else return 0;
+    }
+}
+```
+
+```text
+error: incompatible types: String cannot be converted to Circle
+```
+
+這就是講義 p.7 的 compile-time type safety，和[第 6 節](#6-generics-的兩個好處p7)的 `Object` vs generics 對照是同一個道理。[`Circle.java`](../src/Circle.java) 用的是這個 generic 寫法。
+
 ### 本節檢查清單
 
 - [ ] 同名的一般方法和 generic method 可以共存（p.13）；編譯器挑最精確符合的那一個
@@ -730,6 +872,10 @@ Obama
 - [ ] 會用 `Double[]` 或再加一個 `double[]` overload 修正
 - [ ] 看得懂 `max.compareTo(data[i]) < 0` 就是「max 比 data[i] 小」
 - [ ] 說得出 `"Obama"` 最大的原因：依字元的 Unicode 編碼比較，不是比長度
+- [ ] 自己的 class 實作 `Comparable` 並寫好 `compareTo()`，就能用同一個 `findMax`（type independence）
+- [ ] `println(物件)` 會呼叫 `toString()`；沒改寫時印出 `ClassName@hashCode`
+- [ ] 改寫 `toString()`：`public String toString()`，加上 `@Override`
+- [ ] 分得清 raw `Comparable`（要轉型，錯誤在執行時才出現）和 `Comparable<Circle>`（不用轉型，編譯時就擋下）
 
 ---
 
