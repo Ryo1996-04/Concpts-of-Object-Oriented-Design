@@ -6,11 +6,30 @@ Java 課堂程式與學習筆記，依週次整理。筆記以英文技術名詞
 
 | 週次 | 主題 | 程式 | 筆記 |
 |---|---|---|---|
-| [Week 3](week-03/README.md) | Arrays, Strings, and I/O | [src](week-03/src) | [繁體中文](week-03/notes/notes.zh-TW.md) · [English](week-03/notes/notes.en.md) |
+| [Week 3](week-03/README.md) | Arrays, Strings, and I/O | [src](week-03/src) | [繁體中文](week-03/notes/notes.zh-TW.md) · [English](week-03/notes/notes.en.md) · [Array 精簡版](week-03/notes/array-key-points.zh-TW.md) |
 | [Week 4](week-04/README.md) | Classes, Objects, Constructors, Static Fields | [src](week-04/src) | [p.10–28、p.39 筆記](week-04/notes/classes-and-objects.zh-TW.md) · [Instance / Static](week-04/notes/instance-vs-static.zh-TW.md) |
+| [Week 5](week-05/README.md) | Encapsulation, Overloading, Wrapper Classes, Command-Line Arguments, Package, JavaDoc | [src](week-05/src) | [Encapsulation / CLA / JavaDoc](week-05/notes/encapsulation-cla-packages-javadoc.zh-TW.md) |
 | [Week 6](week-06/README.md) | Inheritance, super, protected, Overriding | [src](week-06/src) | [Inheritance / super / Overriding](week-06/notes/inheritance-and-super.zh-TW.md) |
 | [Week 8](week-08/README.md) | ArrayList, Abstract Classes, Interfaces | [src](week-08/src) | [ArrayList / Abstract / Interface](week-08/notes/arraylist-abstract-interfaces.zh-TW.md) |
 | [Week 9](week-09/README.md) | Enum Types；main、args 與 Scanner；Exception Handling | [src](week-09/src) | [Enum](week-09/notes/enum.zh-TW.md) · [main / Scanner](week-09/notes/main-and-scanner.zh-TW.md) · [Exception Handling](week-09/notes/exception-handling.zh-TW.md) |
+| [Week 10](week-10/README.md) | Generics | [src](week-10/src) | [Generics（p.1–8）](week-10/notes/generics.zh-TW.md) |
+
+## 講義與筆記對照
+
+資料夾以上課週次命名，和講義檔名的編號不一定相同。
+
+| 講義 | 筆記位置 | 已整理 | 尚未整理 |
+|---|---|---|---|
+| `1_OverView+of+OOP+using+Java.pdf`（48 頁） | — | — | 全部 |
+| `2_Program Flow Control.pdf`（17 頁） | — | — | 全部 |
+| `3_Arrays_String_InputOutput.pdf`（28 頁） | Week 3 | p.1–28 | — |
+| `4_Classes_And_Objects.pdf`（57 頁） | Week 4、Week 5 | p.10–35、39、41、44–57 | p.1–9、36–38、40、42–43 |
+| `5_Encapsulation.pdf`（14 頁） | Week 5 | p.1–13 | — |
+| `6_CLA_Packages_JavaDoc.pdf`（19 頁） | Week 5 | p.3–19 | — |
+| `7_Inheritance and Polymorphism.pdf`（51 頁） | Week 6 | p.3–28 | p.29–50（Object class、final、binding、polymorphism、casting、instanceof） |
+| `8_Abstract classes And Interfaces.pdf`（32 頁） | Week 8、Week 9 | p.1–31 | — |
+| `9_Exception Handling in Java.pdf`（41 頁） | Week 9 | p.3–30 | p.31–40（Unit Testing、JUnit） |
+| `10_Generics.pdf`（21 頁） | Week 10 | p.1–8 | p.9–20 |
 
 ## Directory structure
 
@@ -29,6 +48,10 @@ Java 課堂程式與學習筆記，依週次整理。筆記以英文技術名詞
 │   ├── .project
 │   ├── .classpath
 │   └── .settings/
+├── week-05/
+│   ├── README.md
+│   ├── src/
+│   └── notes/
 ├── week-06/
 │   ├── README.md
 │   ├── src/
@@ -37,7 +60,11 @@ Java 課堂程式與學習筆記，依週次整理。筆記以英文技術名詞
 │   ├── README.md
 │   ├── src/
 │   └── notes/
-└── week-09/
+├── week-09/
+│   ├── README.md
+│   ├── src/
+│   └── notes/
+└── week-10/
     ├── README.md
     ├── src/
     └── notes/
