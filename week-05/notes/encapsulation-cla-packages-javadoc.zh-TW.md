@@ -1,5 +1,7 @@
 # Week 5｜Java 物件導向課堂筆記
 
+**繁體中文版** · [English](encapsulation-cla-packages-javadoc.en.md)
+
 - **上課日期：**2026/10/13
 - **講義一：**《Encapsulation》，Tessema Mengistu, Ph.D.；已整理 p.1–p.13。
 - **講義二：**《Classes and Objects》（檔案 `4_Classes_And_Objects.pdf`）；已整理 p.41 Method Overloading、p.44–p.46 Math 類別、p.47–p.57 Wrapper 類別與應用；p.42–p.43 尚未整理。

@@ -2,7 +2,7 @@
 
 ## 筆記
 
-[Encapsulation / Overloading / Wrapper / CLA / Package / JavaDoc](notes/encapsulation-cla-packages-javadoc.zh-TW.md)（2026-10-13 課堂）
+[Encapsulation / Overloading / Wrapper / CLA / Package / JavaDoc](notes/encapsulation-cla-packages-javadoc.zh-TW.md) ([English](notes/encapsulation-cla-packages-javadoc.en.md))（2026-10-13 課堂）
 
 - `5_Encapsulation.pdf` p.1–13：封裝、visibility modifiers、getter／setter、封裝前後對照、課堂 Circle 例子
 - `4_Classes_And_Objects.pdf` p.41、p.44–57：Method Overloading、`static` 問答、Math、Wrapper Classes（p.42–43 尚未整理）

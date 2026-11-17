@@ -1,5 +1,7 @@
 # CSYE6200 筆記：Inheritance、super、protected 與 Overriding
 
+**繁體中文版** · [English](inheritance-and-super.en.md)
+
 > 個人學習筆記，課堂內容以自己的話重新整理。本文不含投影片原文或圖片，標註的頁碼只用來對照課程講義；所有範例程式都是自己寫的。
 
 - 課程：CSYE6200（Fall 2026）

@@ -2,7 +2,7 @@
 
 ## 筆記
 
-[Generics](notes/generics.zh-TW.md)
+[Generics](notes/generics.zh-TW.md) ([English](notes/generics.en.md))
 
 對應 `10_Generics.pdf` p.1–8（2026-11-17 課堂進度）：用 overloading 印不同型別陣列的問題、generic method `<E>` 的寫法與呼叫、type inference、generics 的兩個好處（一份宣告代表一組方法／型別、compile-time type safety）、type parameter / type variable / actual type argument、只能用 reference type。p.9–20（erasure、`Comparable` 與 bounded type、generic class、wildcards）尚未整理。
 

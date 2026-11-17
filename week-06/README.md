@@ -2,7 +2,7 @@
 
 ## 筆記
 
-[Inheritance、super、protected 與 Overriding](notes/inheritance-and-super.zh-TW.md)
+[Inheritance、super、protected 與 Overriding](notes/inheritance-and-super.zh-TW.md) ([English](notes/inheritance-and-super.en.md))
 
 對應講義 p.3–28：is-a / has-a、UML class diagram、`extends`、存取權限與 `protected`、`super(...)` 與 `super.member`、single inheritance、overriding（Shape / Circle / Rectangle 的 `area()`）、overloading 與 overriding 的比較、class hierarchy，以及 constructor 呼叫順序。
 

@@ -6,7 +6,7 @@ CSYE6200 OOP 學習筆記 / Study notes
 
 - [繁體中文版：逐頁重點、範例與課堂補充](notes/notes.zh-TW.md)
 - [English: slide-by-slide notes, examples, and classroom supplements](notes/notes.en.md)
-- [Array 課堂重點精簡版：Row Order、Reference/Heap、Out of Bounds、Jagged、Clone、Pass-by-Value、final](notes/array-key-points.zh-TW.md)
+- [Array 課堂重點精簡版：Row Order、Reference/Heap、Out of Bounds、Jagged、Clone、Pass-by-Value、final](notes/array-key-points.zh-TW.md) ([English](notes/array-key-points.en.md))
 
 ## 內容與來源 / Scope and source
 

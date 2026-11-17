@@ -1,5 +1,7 @@
 # Java 筆記：Class、Object、Instance 與變數的差別
 
+**繁體中文版** · [English](class-object-instance-draft.en.md)
+
 ## 1. 先記住核心概念
 
 - **Class（類別）**：定義物件結構與行為的設計圖。

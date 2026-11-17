@@ -1,5 +1,7 @@
 # CSYE6200 筆記：main 方法、args 與 Scanner（課堂問答）
 
+**繁體中文版** · [English](main-and-scanner.en.md)
+
 > 個人學習筆記，課堂內容以自己的話重新整理。本文不含投影片原文或圖片；所有範例程式都是自己寫的。
 
 - 課程：CSYE6200（Fall 2026）

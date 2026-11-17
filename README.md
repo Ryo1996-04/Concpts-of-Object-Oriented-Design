@@ -1,18 +1,18 @@
 # CSYE6200 — Object-Oriented Design
 
-Java 課堂程式與學習筆記，依週次整理。筆記以英文技術名詞搭配中文解釋；Week 3 另有英文版本。
+Java 課堂程式與學習筆記，依週次整理。筆記以英文技術名詞搭配中文解釋；每份筆記都有繁體中文與英文（`.en.md`）兩個版本。
 
 ## 課程導覽
 
 | 週次 | 主題 | 程式 | 筆記 |
 |---|---|---|---|
-| [Week 3](week-03/README.md) | Arrays, Strings, and I/O | [src](week-03/src) | [繁體中文](week-03/notes/notes.zh-TW.md) · [English](week-03/notes/notes.en.md) · [Array 精簡版](week-03/notes/array-key-points.zh-TW.md) |
-| [Week 4](week-04/README.md) | Classes, Objects, Constructors, Static Fields | [src](week-04/src) | [p.10–28、p.39 筆記](week-04/notes/classes-and-objects.zh-TW.md) · [Instance / Static](week-04/notes/instance-vs-static.zh-TW.md) |
-| [Week 5](week-05/README.md) | Encapsulation, Overloading, Wrapper Classes, Command-Line Arguments, Package, JavaDoc | [src](week-05/src) | [Encapsulation / CLA / JavaDoc](week-05/notes/encapsulation-cla-packages-javadoc.zh-TW.md) |
-| [Week 6](week-06/README.md) | Inheritance, super, protected, Overriding | [src](week-06/src) | [Inheritance / super / Overriding](week-06/notes/inheritance-and-super.zh-TW.md) |
-| [Week 8](week-08/README.md) | ArrayList, Abstract Classes, Interfaces | [src](week-08/src) | [ArrayList / Abstract / Interface](week-08/notes/arraylist-abstract-interfaces.zh-TW.md) |
-| [Week 9](week-09/README.md) | Enum Types；main、args 與 Scanner；Exception Handling | [src](week-09/src) | [Enum](week-09/notes/enum.zh-TW.md) · [main / Scanner](week-09/notes/main-and-scanner.zh-TW.md) · [Exception Handling](week-09/notes/exception-handling.zh-TW.md) |
-| [Week 10](week-10/README.md) | Generics | [src](week-10/src) | [Generics（p.1–8）](week-10/notes/generics.zh-TW.md) |
+| [Week 3](week-03/README.md) | Arrays, Strings, and I/O | [src](week-03/src) | [繁體中文](week-03/notes/notes.zh-TW.md) · [English](week-03/notes/notes.en.md) · [Array 精簡版](week-03/notes/array-key-points.zh-TW.md) ([English](week-03/notes/array-key-points.en.md)) |
+| [Week 4](week-04/README.md) | Classes, Objects, Constructors, Static Fields | [src](week-04/src) | [p.10–28、p.39 筆記](week-04/notes/classes-and-objects.zh-TW.md) ([English](week-04/notes/classes-and-objects.en.md)) · [Instance / Static](week-04/notes/instance-vs-static.zh-TW.md) ([English](week-04/notes/instance-vs-static.en.md)) |
+| [Week 5](week-05/README.md) | Encapsulation, Overloading, Wrapper Classes, Command-Line Arguments, Package, JavaDoc | [src](week-05/src) | [Encapsulation / CLA / JavaDoc](week-05/notes/encapsulation-cla-packages-javadoc.zh-TW.md) ([English](week-05/notes/encapsulation-cla-packages-javadoc.en.md)) |
+| [Week 6](week-06/README.md) | Inheritance, super, protected, Overriding | [src](week-06/src) | [Inheritance / super / Overriding](week-06/notes/inheritance-and-super.zh-TW.md) ([English](week-06/notes/inheritance-and-super.en.md)) |
+| [Week 8](week-08/README.md) | ArrayList, Abstract Classes, Interfaces | [src](week-08/src) | [ArrayList / Abstract / Interface](week-08/notes/arraylist-abstract-interfaces.zh-TW.md) ([English](week-08/notes/arraylist-abstract-interfaces.en.md)) |
+| [Week 9](week-09/README.md) | Enum Types；main、args 與 Scanner；Exception Handling | [src](week-09/src) | [Enum](week-09/notes/enum.zh-TW.md) ([English](week-09/notes/enum.en.md)) · [main / Scanner](week-09/notes/main-and-scanner.zh-TW.md) ([English](week-09/notes/main-and-scanner.en.md)) · [Exception Handling](week-09/notes/exception-handling.zh-TW.md) ([English](week-09/notes/exception-handling.en.md)) |
+| [Week 10](week-10/README.md) | Generics | [src](week-10/src) | [Generics（p.1–8）](week-10/notes/generics.zh-TW.md) ([English](week-10/notes/generics.en.md)) |
 
 ## 講義與筆記對照
 

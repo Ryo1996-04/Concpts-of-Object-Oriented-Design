@@ -1,5 +1,7 @@
 # CSYE6200 OOP — Week 3：Java Array 筆記
 
+**繁體中文版** · [English](array-key-points.en.md)
+
 ## 1. 課堂重點：Row Order Processing
 
 > 課堂提到的「Java 是 row order processing」，可以理解為：二維陣列通常採用逐列處理（row-major traversal），先處理完一個 row，再處理下一個 row。

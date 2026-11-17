@@ -2,13 +2,13 @@
 
 ## 筆記
 
-[Classes and Objects：p.10–28、p.39 與課堂整合](notes/classes-and-objects.zh-TW.md)
+[Classes and Objects：p.10–28、p.39 與課堂整合](notes/classes-and-objects.zh-TW.md) ([English](notes/classes-and-objects.en.md))
 
 涵蓋 reference、object creation、field access、method invocation、constructors、overloading 和 `this`，並保留課堂 Rectangle 與 Person 的說明。
 
-[Instance 與 Static 比較：p.29–35](notes/instance-vs-static.zh-TW.md)
+[Instance 與 Static 比較：p.29–35](notes/instance-vs-static.zh-TW.md) ([English](notes/instance-vs-static.en.md))
 
-[早期草稿：Class、Object、Instance 與變數的差別](notes/archive/class-object-instance-draft.zh-TW.md)（主筆記的「課堂整合」一節是它的改寫，僅供對照）
+[早期草稿：Class、Object、Instance 與變數的差別](notes/archive/class-object-instance-draft.zh-TW.md) ([English](notes/archive/class-object-instance-draft.en.md))（主筆記的「課堂整合」一節是它的改寫，僅供對照）
 
 ## 程式
 

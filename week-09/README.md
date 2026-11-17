@@ -2,7 +2,7 @@
 
 ## 筆記
 
-[Enum Types](notes/enum.zh-TW.md) · [main、args 與 Scanner（課堂問答）](notes/main-and-scanner.zh-TW.md) · [Exception Handling](notes/exception-handling.zh-TW.md)
+[Enum Types](notes/enum.zh-TW.md) ([English](notes/enum.en.md)) · [main、args 與 Scanner（課堂問答）](notes/main-and-scanner.zh-TW.md) ([English](notes/main-and-scanner.en.md)) · [Exception Handling](notes/exception-handling.zh-TW.md) ([English](notes/exception-handling.en.md))
 
 對應 `8_Abstract classes And Interfaces.pdf` p.25–31：固定常數集合、`enum` 宣告語法、enum 是繼承 `java.lang.Enum` 的 class、private constructor、`values()`、enum 搭配 `switch`。課堂以紅綠燈（開／關、顏色、方向）和座標系上下左右（Move）為例。
 

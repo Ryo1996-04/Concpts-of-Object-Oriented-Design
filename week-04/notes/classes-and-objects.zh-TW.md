@@ -1,5 +1,7 @@
 # Classes and Objects：p.10–28、p.39 與課堂整合筆記
 
+**繁體中文版** · [English](classes-and-objects.en.md)
+
 教材：`5_Classes_And_Objects.pdf`，第 10–28 頁與第 39 頁；p.29–35 的 instance/static 主題另見比較筆記。
 
 閱讀順序：p.10–18 為 object 與 reference 基礎；p.19–28 為 constructors 與 this。課堂 Rectangle 與 Person 補充範例另保留在本文。

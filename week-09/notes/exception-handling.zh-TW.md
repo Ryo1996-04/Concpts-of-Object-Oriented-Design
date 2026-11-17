@@ -1,5 +1,7 @@
 # CSYE6200 筆記：Exception Handling
 
+**繁體中文版** · [English](exception-handling.en.md)
+
 > 個人學習筆記，課堂內容以自己的話重新整理。本文不含投影片原文或圖片，標註的頁碼只用來對照課程講義；所有範例程式都是自己寫的，錯誤訊息都是實際用 `javac` / `java` 跑出來的。
 
 - 課程：CSYE6200（Fall 2026）

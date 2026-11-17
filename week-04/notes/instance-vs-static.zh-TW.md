@@ -1,5 +1,7 @@
 # Instance 與 Static：投影片對照筆記
 
+**繁體中文版** · [English](instance-vs-static.en.md)
+
 對應 `5_Classes_And_Objects.pdf`：p.29–31 的 variables 與 Person counter，以及 p.32–35 的 methods。本篇是主筆記 p.10–28 之後的主題補充。
 
 ## 先釐清名詞

@@ -2,7 +2,7 @@
 
 ## 筆記
 
-[ArrayList、Abstract Classes 與 Interfaces](notes/arraylist-abstract-interfaces.zh-TW.md)
+[ArrayList、Abstract Classes 與 Interfaces](notes/arraylist-abstract-interfaces.zh-TW.md) ([English](notes/arraylist-abstract-interfaces.en.md))
 
 對應 `8_Abstract classes And Interfaces.pdf` p.1–24：ArrayList（動態陣列、constructors、常用方法、generics、`remove` 的 overloading 陷阱）、abstract class（不能 instantiate、abstract method、concrete class、四條規則）、interface（常數與 abstract method、`implements`、interface 繼承、同時 extends 與 implements、polymorphism via interfaces），最後是 abstract class 與 interface 的比較。同一份講義 p.25–31 的 Enum 在 [Week 9](../week-09/README.md)。
 
